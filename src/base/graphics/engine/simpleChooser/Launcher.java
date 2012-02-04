@@ -37,10 +37,13 @@ public class Launcher implements WindowListener {
 		}
 		
 		simpleModeSelectorUI(dModes);
-		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync);
-		test.start();
 		
+		//TODO add reference to ActionManager
+		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync, null);
 		
+		Thread graphics = new Thread(test);
+		graphics.start();
+			
 	}
 
 	private void simpleModeSelectorUI(DisplayMode[] dModes) {

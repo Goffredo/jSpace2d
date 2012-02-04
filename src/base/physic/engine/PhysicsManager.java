@@ -1,11 +1,11 @@
 package base.physic.engine;
 
 
-import base.ManagerAction;
+import base.ActionManager;
 import base.graphics.CreateGameRenderable;
 import base.graphics.RemoveGameRenderable;
 import base.physic.NewBodyAction;
-import base.physic.PhysicAction;
+import base.physic.PhysicsAction;
 import base.physic.RemoveBodyAction;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -18,9 +18,9 @@ import org.jbox2d.dynamics.*;
  *
  * @author mauro
  */
-public class ManagerPhysic {
+public class PhysicsManager {
 
-    ManagerAction actionManager;
+    ActionManager actionManager;
     TreeMap<Integer, Body> sortedOggetto2D = new TreeMap<>();
     
     private static final float TIMESTEP = 1.0f / 60.0f;
@@ -31,7 +31,7 @@ public class ManagerPhysic {
     float maxY = 50;
     private int actualTurn = 0;
 
-    public ManagerPhysic(ManagerAction aM) {
+    public PhysicsManager(ActionManager aM) {
         actionManager=aM;
         Vec2 worldGravity = new Vec2();
         physicWorld = new World(worldGravity, true);
@@ -90,9 +90,9 @@ public class ManagerPhysic {
     }
 
     public void update() throws Exception {
-        ArrayList<PhysicAction> myAction=actionManager.getPhysicActions();
+        ArrayList<PhysicsAction> myAction=actionManager.getPhysicActions();
         
-        for (PhysicAction t:myAction){
+        for (PhysicsAction t:myAction){
             if (t instanceof NewBodyAction){
                 NewBodyAction actNew = (NewBodyAction) t;
                 Transform positionInfo = addBody(actNew);

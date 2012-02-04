@@ -8,6 +8,6 @@ package base.physic;
  *
  * @author mauro
  */
-public class RemoveBodyAction extends PhysicAction{
+public class RemoveBodyAction extends PhysicsAction{
     
 }

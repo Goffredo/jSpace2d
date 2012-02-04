@@ -1,8 +1,13 @@
 package base.graphics.engine.main;
 
+import base.ActionManager;
+import base.graphics.CreateGameRenderable;
+import base.graphics.GraphicAction;
 import base.graphics.engine.loaders.SimpleObjLoader;
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+
 import base.graphics.engine.objects.ObjMesh;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
@@ -12,16 +17,18 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector2f;
 
-public class GraphicEngine {
+public class GraphicEngine implements Runnable{
 
 	private long lastFPS;
 	private int fps;
-	private Cube cube;
 	private long lastFrame;
 	private float angle;
-	private ObjMesh testTorus;
 	private FloatBuffer pos;
-
+	private DisplayMode mode;
+	private boolean fullScreen;
+	private boolean vSync;
+	private ActionManager manager;
+	private ArrayList<GraphicAction> toProcess;
 	/**
 	 * Manages graphics.
 	 * 
@@ -35,24 +42,18 @@ public class GraphicEngine {
 	 *            true to enable, false not to
 	 */
 
-	public GraphicEngine(DisplayMode mode, boolean fullScreen, boolean vSync) {
-		cube = new Cube(1.0f, new Vector2f(), 0.0f);
-		testTorus = SimpleObjLoader.loadObjFromFile((Paths.get("Resources/suzanne.obj")));
-
-		init(mode, fullScreen, vSync);
-
+	public GraphicEngine(DisplayMode mode, boolean fullScreen, boolean vSync, ActionManager manager) {
+		this.mode = mode;
+		this.fullScreen = fullScreen;
+		this.vSync = vSync;
+		this.manager = manager;
 	}
 
 	private void render(int delta) {
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GLU.gluLookAt(0.0f, 0.0f, 0, 0, 0, -30.0f, 0, 1, 0);
 		GL11.glPushMatrix();
 		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
 		GL11.glPopMatrix();
-		//cube.render();
-		testTorus.render();
 		updateFPS();
 
 	}
@@ -96,7 +97,7 @@ public class GraphicEngine {
 		GLU.gluPerspective(45.0f, (float) width / (float) height, 1, 100);
 
 		float mat_specular[] = { 1.0f, 1.0f, 1.0f, 0.1f };
-		float light_position[] = { 0.0f, 0.0f, -20.0f, 1.0f };
+		float light_position[] = { 0.0f, -1.0f, 0.5f, 0.0f };
 		GL11.glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 
@@ -107,7 +108,7 @@ public class GraphicEngine {
 
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-		GLU.gluLookAt(0, 0, 0, 0, 0, -20.0f, 0, 1, 0);
+		GLU.gluLookAt(0, 0, 5, 0, 0, -1, 0, 1, 0);
 		
 		
 		
@@ -149,26 +150,35 @@ public class GraphicEngine {
 		return delta;
 	}
 
-	public void start() {
+	@Override
+	public void run() {
 		// TODO Auto-getDelta();
 
-		while (!Display.isCloseRequested()) {
-			int delta = getDelta();
-			angle += delta / 10.f;
-			if (angle >= 360.0)
-				angle = 0;
-			render(delta);
-			cube.setPosition(new Vector2f((float)Math.sin(Math.toRadians(angle))*5.0f,(float)Math.cos(Math.toRadians(angle))*5.0f));
-			cube.setRotation(angle);
-			
-			testTorus.setPosition(new Vector2f((float)Math.sin(Math.toRadians(angle))*5.0f,(float)Math.cos(Math.toRadians(angle))*5.0f));
-			testTorus.setRotation(angle);
-			Display.update();
-                        Display.sync(60);
+
+		init(mode, fullScreen, vSync);
+		
+				while (!Display.isCloseRequested()) {
+					int delta = getDelta();
+					angle += delta / 10.f;
+					if (angle >= 360.0f)
+						angle = 0;
+					render(delta);
+					processActions();					
+					Display.update();					
+				}
+
+				Display.destroy();
+		
+	}
+
+	private void processActions() {
+		toProcess = manager.getGraphicActions();
+		
+		for(GraphicAction action : toProcess){
+			if(action instanceof CreateGameRenderable){
+				
+			}
 		}
-
-		Display.destroy();
-
 	}
 
 }

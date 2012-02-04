@@ -13,9 +13,9 @@ public class ObjMesh extends GameRenderable{
 	@Override
 	public void render() {
 		GL11.glPushMatrix();
-		GL11.glTranslatef(position.x, position.y, -20.0f);
+		GL11.glTranslatef(position.x, position.y, 0.0f);
 		GL11.glRotatef(rotation, 0, 0, 1);
-		GL11.glRotatef(90.0f, 0, 1, 0);
+		//GL11.glRotatef(90.0f, 1, 0, 0);
 		
 		GL11.glBegin(GL11.GL_TRIANGLES);
 		for(Triangle triangle : triangles){

@@ -1,32 +1,32 @@
 package base;
 
 import base.graphics.GraphicAction;
-import base.physic.PhysicAction;
+import base.physic.PhysicsAction;
 import java.util.ArrayList;
 
 /**
  *
  * @author mauro
  */
-public class ManagerAction {
+public class ActionManager {
     
     
     /*
      * PHYSIC
      */
     private final Object physicLock = new Object();
-    ArrayList<PhysicAction> physicActions;
+    ArrayList<PhysicsAction> physicActions;
         
-    public ArrayList<PhysicAction> getPhysicActions() {
-        ArrayList<PhysicAction> tmpActions = new ArrayList<>();
-        ArrayList<PhysicAction> returnActions = physicActions;
+    public ArrayList<PhysicsAction> getPhysicActions() {
+        ArrayList<PhysicsAction> tmpActions = new ArrayList<>();
+        ArrayList<PhysicsAction> returnActions = physicActions;
         synchronized(physicLock){
             physicActions=tmpActions;
         }
         return returnActions;
     }
     
-    public void addPhysicAction(PhysicAction a){
+    public void addPhysicAction(PhysicsAction a){
         synchronized(physicLock){
             physicActions.add(a);
         }

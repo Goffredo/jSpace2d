@@ -4,7 +4,7 @@
  */
 package base.physic;
 
-import base.physic.PhysicAction;
+import base.physic.PhysicsAction;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.FixtureDef;
  *
  * @author mauro
  */
-public class NewBodyAction extends PhysicAction{
+public class NewBodyAction extends PhysicsAction{
     private int modelID;
     Body myself;
 

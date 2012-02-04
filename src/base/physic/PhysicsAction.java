@@ -4,7 +4,7 @@ package base.physic;
  *
  * @author mauro
  */
-public abstract class PhysicAction{
+public abstract class PhysicsAction{
     private Integer IDbody;
     
     public Integer getID() {
