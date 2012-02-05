@@ -2,12 +2,14 @@ package base.graphics.engine.main;
 
 import base.ActionManager;
 import base.graphics.CreateGameRenderable;
+import base.graphics.CreateGameRenderable_dummy;
 import base.graphics.GraphicAction;
 import base.graphics.engine.loaders.SimpleObjLoader;
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import base.graphics.engine.objects.GameRenderable;
 import base.graphics.engine.objects.ObjMesh;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
@@ -28,14 +30,14 @@ public class GraphicEngine implements Runnable{
 	private boolean fullScreen;
 	private boolean vSync;
 	private ActionManager manager;
-	private ArrayList<GraphicAction> toProcess;
+	private ArrayList<GraphicAction> toProcess = new ArrayList<GraphicAction>();
+	private ArrayList<GameRenderable> toDraw = new ArrayList<GameRenderable>();
+	
 	/**
 	 * Manages graphics.
 	 * 
-	 * @param width
-	 *            the desired width of the window to be created
-	 * @param height
-	 *            the desired height of the window to be created
+	 * @param mode
+	 * 			  DisplayMode to set
 	 * @param fullscreen
 	 *            true to enable, false not to
 	 * @param vSync
@@ -51,21 +53,23 @@ public class GraphicEngine implements Runnable{
 
 	private void render(int delta) {
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-		GL11.glPushMatrix();
 		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
-		GL11.glPopMatrix();
+		
+		for(GameRenderable renderable : toDraw){
+			renderable.render();
+		}
+		
 		updateFPS();
-
 	}
 
 	/**
 	 * Initialize the screen, camera and light.
 	 * 
-	 * @param width
-	 *            the desired width of the window to be created
-	 * @param height
-	 *            the desired height of the window to be created
+	 * @param mode
+	 * 			  DisplayMode to set
 	 * @param fullscreen
+	 *            true to enable, false not to
+	 * @param vSync
 	 *            true to enable, false not to
 	 */
 
@@ -162,8 +166,9 @@ public class GraphicEngine implements Runnable{
 					angle += delta / 10.f;
 					if (angle >= 360.0f)
 						angle = 0;
+					
+					processActions();
 					render(delta);
-					processActions();					
 					Display.update();					
 				}
 
@@ -173,10 +178,14 @@ public class GraphicEngine implements Runnable{
 
 	private void processActions() {
 		toProcess = manager.getGraphicActions();
-		
 		for(GraphicAction action : toProcess){
 			if(action instanceof CreateGameRenderable){
-				
+				System.out.println("we have an action!");
+			}else{
+				if(action instanceof CreateGameRenderable_dummy){
+					System.out.println("Creating new suzanne!!");
+					toDraw.add(SimpleObjLoader.loadObjFromFile(Paths.get("Resources/Objects/suzanne.obj")));
+				}
 			}
 		}
 	}

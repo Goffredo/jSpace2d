@@ -1,5 +1,8 @@
 package base.graphics.engine.simpleChooser;
 
+import base.ActionManager;
+import base.graphics.CreateGameRenderable;
+import base.graphics.CreateGameRenderable_dummy;
 import base.graphics.engine.main.GraphicEngine;
 import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
@@ -8,6 +11,11 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+
+import org.jbox2d.common.Mat22;
+import org.jbox2d.common.MathUtils;
+import org.jbox2d.common.Transform;
+import org.jbox2d.common.Vec2;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -39,10 +47,22 @@ public class Launcher implements WindowListener {
 		simpleModeSelectorUI(dModes);
 		
 		//TODO add reference to ActionManager
-		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync, null);
 		
+		ActionManager aManager = new ActionManager();
+		
+		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync, aManager);		
 		Thread graphics = new Thread(test);
 		graphics.start();
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Transform transform = new Transform();
+		transform.set(new Vec2(0.0f,0.0f), (float)(Math.PI/2));
+		aManager.addGraphicsAction(new CreateGameRenderable_dummy(0, 0, transform));
 			
 	}
 

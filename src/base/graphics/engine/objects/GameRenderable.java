@@ -1,58 +1,56 @@
 package base.graphics.engine.objects;
 
 import base.graphics.engine.objectHelpers.Triangle;
+
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
+
+import org.jbox2d.common.Transform;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 public abstract class GameRenderable {
-
-	protected Vector2f position;
-	protected float rotation;
-	protected ArrayList<Triangle> triangles;
-
-	public GameRenderable(ArrayList<Triangle> triangles){
+	
+	protected Transform transform;
+	protected FloatBuffer trianglesBuffer;
+	protected FloatBuffer normalsBuffer;
+	
+	public GameRenderable(ArrayList<Triangle> triangles, Transform transform){
 		setTriangles(triangles);
-		setPosition(new Vector2f(0.0f, 0.0f));
-		setRotation(0.0f);
-	}	
-
-	/**
-	 * @return the position
-	 */
-	public Vector2f getPosition() {
-		return position;
-	}
-	/**
-	 * @param position the position to set
-	 */
-	public void setPosition(Vector2f position) {
-		this.position = position;
-	}
-	/**
-	 * @return the rotation
-	 */
-	public float getRotation() {
-		return rotation;
-	}
-	/**
-	 * @param rotation the rotation to set
-	 */
-	public void setRotation(float rotation) {
-		this.rotation = rotation;
-	}
-
-	/**
-	 * @return the triangles
-	 */
-	public ArrayList<Triangle> getTriangles() {
-		return triangles;
+		this.transform = transform;
 	}
 
 	/**
 	 * @param triangles the triangles to set
 	 */
 	public void setTriangles(ArrayList<Triangle> triangles) {
-		this.triangles = triangles;
+		trianglesBuffer = BufferUtils.createFloatBuffer(triangles.size()*9); //3 components per vertex, 3 vertices per triangle
+		normalsBuffer = BufferUtils.createFloatBuffer(triangles.size()*9); //3 components per normal, 1 normal per vertex, 3 vertices per triangle
+		
+		//fill Buffers
+		Vector3f[] faceVertices = null;
+		Vector3f[] faceNormals = null;
+		
+		for(int i = 0; i<triangles.size(); i++){
+			
+			faceVertices = triangles.get(i).vertices;
+			faceNormals = triangles.get(i).normals;
+			
+			trianglesBuffer.put(faceVertices[0].x).put(faceVertices[0].y).put(faceVertices[0].z); //vertex 1
+			trianglesBuffer.put(faceVertices[1].x).put(faceVertices[1].y).put(faceVertices[1].z); //vertex 2
+			trianglesBuffer.put(faceVertices[2].x).put(faceVertices[2].y).put(faceVertices[2].z); //vertex 3
+			
+
+			normalsBuffer.put(faceNormals[0].x).put(faceNormals[0].y).put(faceNormals[0].z); //normal for vertex 1
+			normalsBuffer.put(faceNormals[1].x).put(faceNormals[1].y).put(faceNormals[1].z); //normal for vertex 2
+			normalsBuffer.put(faceNormals[2].x).put(faceNormals[2].y).put(faceNormals[2].z); //normal for vertex 3
+		}
+		
+		//set ready to be read
+		trianglesBuffer.flip();
+		normalsBuffer.flip();
+		
 	}
 
 	public abstract void render();

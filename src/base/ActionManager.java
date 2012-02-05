@@ -10,12 +10,11 @@ import java.util.ArrayList;
  */
 public class ActionManager {
     
-    
     /*
      * PHYSIC
      */
     private final Object physicLock = new Object();
-    ArrayList<PhysicsAction> physicActions;
+    ArrayList<PhysicsAction> physicActions = new ArrayList<PhysicsAction>();
         
     public ArrayList<PhysicsAction> getPhysicActions() {
         ArrayList<PhysicsAction> tmpActions = new ArrayList<>();
@@ -36,7 +35,7 @@ public class ActionManager {
      * GRAPHICS
      */
     private final Object graphicLock = new Object();
-    ArrayList<GraphicAction> graphicActions;
+    ArrayList<GraphicAction> graphicActions = new ArrayList<GraphicAction>();
     
     public ArrayList<GraphicAction> getGraphicActions() {
         ArrayList<GraphicAction> tmpActions = new ArrayList<>();
