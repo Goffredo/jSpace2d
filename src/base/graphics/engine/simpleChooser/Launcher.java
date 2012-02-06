@@ -110,22 +110,9 @@ public class Launcher implements WindowListener {
 	}
 
 	private void createRandomActions(ActionManager aManager) {
-		BodyDef bd = new BodyDef();
-		FixtureDef fd = new FixtureDef();
-		fd.density = 5.0f;
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(2.0f, 2.0f);
-		fd.shape = shape;
-		fd.restitution = 0.8f;
-		fd.friction = 0.01f;
+		
 		for (int i = 0; i < numberOfCubes; i++) {
-			bd = new BodyDef();
-			bd.allowSleep = false;
-			bd.type = BodyType.DYNAMIC;
-			bd.angle = (float) (MathUtils.HALF_PI * Math.random());
-			bd.position = new Vec2((float) (50.0f * Math.random()) - 25,
-					(float) (50.0f * Math.random()) - 25);
-			aManager.addPhysicAction(new NewBodyAction(bd, fd));
+			aManager.addPhysicAction(new NewBodyAction(i, 0));
 		}
 	}
 

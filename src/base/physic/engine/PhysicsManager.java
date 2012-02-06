@@ -1,40 +1,35 @@
 package base.physic.engine;
 
-import java.util.ArrayList;
-import java.util.TreeMap;
-
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
-import org.jbox2d.dynamics.World;
-
 import base.ActionManager;
 import base.graphics.CreateGameRenderable;
 import base.graphics.RemoveGameRenderable;
 import base.physic.NewBodyAction;
+import base.physic.NewBodyActionServer;
 import base.physic.PhysicsAction;
 import base.physic.RemoveBodyAction;
+import base.server.NewEntityInfo;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Transform;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.*;
 
 /**
- * 
+ *
  * @author mauro
  */
 public class PhysicsManager {
 
 	private static final float TIMESTEP = 0.0125f;
 	ActionManager actionManager;
-
 	private int actualTurn = 0;
 	float maxX = 50;
 	float maxY = 50;
 	float minX = -50;
 	float minY = -50;
 	World physicWorld;
-	TreeMap<Integer, Body> sortedOggetto2D = new TreeMap<Integer, Body>();
+	TreeMap<Integer, Body> sortedOggetto2D = new TreeMap<>();
 
 	public PhysicsManager(ActionManager aM) {
 		actionManager = aM;
@@ -46,9 +41,9 @@ public class PhysicsManager {
 
 	private Transform addBody(NewBodyAction t) {
 
-		Body body = physicWorld.createBody(t.bodyDef);
+		Body body = physicWorld.createBody(t.getBodyDef());
 		if (body != null) {
-			body.createFixture(t.fixtureDef);
+			body.createFixture(t.getFixitureDef());
 
 			int IDvalue = physicWorld.getBodyCount() + 1;
 			t.IDbody = new Integer(IDvalue);
@@ -131,8 +126,19 @@ public class PhysicsManager {
 
 	public void update() throws Exception {
 		ArrayList<PhysicsAction> myAction = actionManager.getPhysicActions();
-
 		for (PhysicsAction t : myAction) {
+			if (t instanceof NewBodyActionServer) {
+				NewBodyActionServer actNew = (NewBodyActionServer) t;
+				Transform positionInfo = addBody(actNew);
+				if (positionInfo != null) {
+					CreateGameRenderable tempA = new CreateGameRenderable(actNew.getID(), actNew.getModelID(), positionInfo);
+					actionManager.addGraphicsAction(tempA);
+					NewEntityInfo tempB = new NewEntityInfo(actNew.getID(), actNew.getModelID(), positionInfo, actualTurn);
+					actionManager.addServerAction(tempB);
+				} else {
+					throw new Exception("Body creation failed");
+				}
+			}
 			if (t instanceof NewBodyAction) {
 				NewBodyAction actNew = (NewBodyAction) t;
 				Transform positionInfo = addBody(actNew);
@@ -153,7 +159,7 @@ public class PhysicsManager {
 		actualTurn++;
 		/*
 		 * Body body = physicWorld.getBodyList();
-		 * 
+		 *
 		 * while(body!=null){ System.out.println(body.getTransform().position);
 		 * body = body.getNext(); }
 		 */

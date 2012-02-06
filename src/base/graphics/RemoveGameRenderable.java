@@ -5,7 +5,7 @@
 package base.graphics;
 
 /**
- * 
+ *
  * @author mauro
  */
 public class RemoveGameRenderable extends GraphicAction {
@@ -16,5 +16,4 @@ public class RemoveGameRenderable extends GraphicAction {
 		super(ActionType.REMOVE);
 		this.iD = iD;
 	}
-
 }
