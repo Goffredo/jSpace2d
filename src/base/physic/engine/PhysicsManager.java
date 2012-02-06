@@ -20,7 +20,7 @@ import org.jbox2d.dynamics.*;
  */
 public class PhysicsManager {
 
-	private static final float TIMESTEP = 0.00625f;
+	private static final float TIMESTEP = 0.0125f;
 	ActionManager actionManager;
 
 	private int actualTurn = 0;
@@ -33,7 +33,7 @@ public class PhysicsManager {
 
 	public PhysicsManager(ActionManager aM) {
 		actionManager=aM;
-		Vec2 worldGravity = new Vec2(0.0f,-30.0f);
+		Vec2 worldGravity = new Vec2(0.0f,-5.0f);
 		physicWorld = new World(worldGravity, true);
 		System.out.println("created world");
 		createBorder();

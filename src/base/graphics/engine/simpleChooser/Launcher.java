@@ -27,7 +27,8 @@ import org.lwjgl.opengl.DisplayMode;
 
 public class Launcher implements WindowListener {
 
-	private static final long physicsStep = 6250000;
+	private static final long physicsStep = 12500000;
+	private static final int numberOfCubes = 200;
 	private static ModeChooser frame;
 	private static DisplayMode mode;
 
@@ -39,6 +40,8 @@ public class Launcher implements WindowListener {
 	private JCheckBox vSyncCheckBox;
 	private long delta;
 	private long timeBuffer = 0;
+	private int pUpdates = 0;
+	private long lastCheck;
 
 	public Launcher(){
 		mode = null;
@@ -53,47 +56,68 @@ public class Launcher implements WindowListener {
 
 		simpleModeSelectorUI(dModes);
 
-		//TODO add reference to ActionManager
+		//TODO improve handling ActionManager
 
 		ActionManager aManager = new ActionManager();
 
 		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync, aManager);		
 		Thread graphics = new Thread(test);
 		graphics.start();
-
+		
 		PhysicsManager pManager = new PhysicsManager(aManager);
 		createRandomActions(aManager);
+		
 		delta = System.nanoTime();
+		lastCheck = delta;
 		timeBuffer = 0;
 		while(true){
-			updateTimeBuffer();
-			if(timeBuffer>physicsStep){
-				while(timeBuffer>physicsStep){					
+			//updateTimeBuffer();
+			if(getDelta() + timeBuffer>physicsStep){
+				timeBuffer += getDelta();
+				delta = System.nanoTime();
+				
+				while(timeBuffer>physicsStep){
+					
 					try {
+						long timePhysics = System.nanoTime();
 						pManager.update();
+						if(System.nanoTime()-timePhysics>physicsStep)
+							System.out.println("Warning! Computing physics is taking too long!");
+						timeBuffer -= physicsStep;
+						pUpdates++;
+						updatePPS();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					timeBuffer -= physicsStep;
+					
 				}
+				
 			}else{
 				try {
-					int milliseconds = (int) ((physicsStep-timeBuffer) / 1000000);
-					Thread.sleep(milliseconds/10);
+					int milliseconds = (int) ((physicsStep-getDelta()) / 1000000);					
+					Thread.sleep(milliseconds);
+					//System.out.println("waited for "+milliseconds+" milliseconds");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			
 
 		}
 
 	}
 
-	private void updateTimeBuffer() {
-		timeBuffer += getDelta();
-		delta = System.nanoTime();
+	private void updatePPS() {
+		long deltaPhysics = System.nanoTime()-lastCheck; 
+		if( deltaPhysics > 1000000000){
+			lastCheck = System.nanoTime();
+			deltaPhysics /= 1000000000;
+			System.out.println("pps: "+pUpdates / deltaPhysics);
+			
+			pUpdates = 0;
+		}
 	}
 
 	private long getDelta() {		
@@ -107,9 +131,9 @@ public class Launcher implements WindowListener {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(2.0f, 2.0f);
 		fd.shape = shape;
-		fd.restitution = 0.9f;
+		fd.restitution = 0.8f;
 		fd.friction = 0.01f;
-		for(int i = 0; i<300; i++){
+		for(int i = 0; i<numberOfCubes; i++){
 			bd = new BodyDef();
 			bd.allowSleep = false;
 			bd.type = BodyType.DYNAMIC;

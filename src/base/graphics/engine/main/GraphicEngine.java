@@ -147,7 +147,6 @@ public class GraphicEngine implements Runnable{
 					try {
 						throw new Exception("Object ID already present!");
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						System.exit(0);
 					}
@@ -163,8 +162,7 @@ public class GraphicEngine implements Runnable{
 				}else{
 					try {
 						throw new Exception("Object ID does not exist!");
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
+					} catch (Exception e) {						
 						e.printStackTrace();
 						System.exit(0);
 					}
