@@ -95,9 +95,9 @@ public class Launcher implements WindowListener {
 				
 			}else{
 				try {
-					int milliseconds = (int) ((physicsStep-getDelta()) / 1000000);					
+					
+					int milliseconds = (int) ((physicsStep-getDelta()) / 1000000);
 					Thread.sleep(milliseconds);
-					//System.out.println("waited for "+milliseconds+" milliseconds");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -115,9 +115,14 @@ public class Launcher implements WindowListener {
 			lastCheck = System.nanoTime();
 			deltaPhysics /= 1000000000;
 			System.out.println("pps: "+pUpdates / deltaPhysics);
-			
 			pUpdates = 0;
 		}
+	}
+
+	private void updateTimeBuffer() {
+		//timeBuffer = getDelta();
+		//System.out.println("Physics took: "+getDelta()+" nanoseconds");
+		//System.out.println("timeBuffer: "+timeBuffer);
 	}
 
 	private long getDelta() {		
