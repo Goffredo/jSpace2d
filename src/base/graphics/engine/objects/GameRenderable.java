@@ -7,19 +7,20 @@ import java.util.ArrayList;
 
 import org.jbox2d.common.Transform;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 public abstract class GameRenderable {
 	
-	protected Transform transform;
-	protected FloatBuffer trianglesBuffer;
 	protected FloatBuffer normalsBuffer;
+	public Transform transform;
+	protected FloatBuffer trianglesBuffer;
 	
 	public GameRenderable(ArrayList<Triangle> triangles, Transform transform){
 		setTriangles(triangles);
 		this.transform = transform;
 	}
+
+	public abstract void render();
 
 	/**
 	 * @param triangles the triangles to set
@@ -52,7 +53,5 @@ public abstract class GameRenderable {
 		normalsBuffer.flip();
 		
 	}
-
-	public abstract void render();
 
 }

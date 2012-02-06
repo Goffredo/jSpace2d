@@ -8,8 +8,15 @@ import org.jbox2d.common.Transform;
  */
 public class CreateGameRenderable extends GraphicAction{
 
-    public CreateGameRenderable(Integer iD, int modelID, Transform positionInfo) {
-        throw new UnsupportedOperationException("Not yet implemented");
+	public Integer iD;
+	public int modelID;
+	public Transform positionInfo;
+	
+	public CreateGameRenderable(Integer iD, int modelID, Transform positionInfo) {
+		super(ActionType.CREATE);
+		this.iD = iD;
+		this.modelID = modelID;
+		this.positionInfo = positionInfo;
     }
     
 }

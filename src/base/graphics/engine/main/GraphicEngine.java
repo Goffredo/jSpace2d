@@ -2,37 +2,35 @@ package base.graphics.engine.main;
 
 import base.ActionManager;
 import base.graphics.CreateGameRenderable;
-import base.graphics.CreateGameRenderable_dummy;
 import base.graphics.GraphicAction;
+import base.graphics.RemoveGameRenderable;
 import base.graphics.engine.loaders.SimpleObjLoader;
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import base.graphics.engine.objects.GameRenderable;
-import base.graphics.engine.objects.ObjMesh;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.vector.Vector2f;
 
 public class GraphicEngine implements Runnable{
 
-	private long lastFPS;
 	private int fps;
-	private long lastFrame;
-	private float angle;
-	private FloatBuffer pos;
-	private DisplayMode mode;
 	private boolean fullScreen;
-	private boolean vSync;
+	private long lastFPS;
+	private long lastFrame;
 	private ActionManager manager;
+	private DisplayMode mode;
+	private FloatBuffer pos;
+	private HashMap<Integer,GameRenderable> toDraw = new HashMap<Integer,GameRenderable>();
 	private ArrayList<GraphicAction> toProcess = new ArrayList<GraphicAction>();
-	private ArrayList<GameRenderable> toDraw = new ArrayList<GameRenderable>();
-	
+	private boolean vSync;
+
 	/**
 	 * Manages graphics.
 	 * 
@@ -51,16 +49,23 @@ public class GraphicEngine implements Runnable{
 		this.manager = manager;
 	}
 
-	private void render(int delta) {
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
-		
-		for(GameRenderable renderable : toDraw){
-			renderable.render();
-		}
-		
-		updateFPS();
+	public int getDelta() {
+		long time = getTime();
+		int delta = (int) (time - lastFrame);
+		lastFrame = time;
+
+		return delta;
 	}
+
+	/**
+	 * Get the time in milliseconds
+	 * 
+	 * @return The system time in milliseconds
+	 */
+	public long getTime() {
+		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+	}
+
 
 	/**
 	 * Initialize the screen, camera and light.
@@ -112,10 +117,10 @@ public class GraphicEngine implements Runnable{
 
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-		GLU.gluLookAt(0, 0, 5, 0, 0, -1, 0, 1, 0);
-		
-		
-		
+		GLU.gluLookAt(0, 0, 50, 0, 0, -1, 0, 1, 0);
+
+
+
 		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
 
 		GL11.glEnable(GL11.GL_LIGHTING);
@@ -124,14 +129,74 @@ public class GraphicEngine implements Runnable{
 
 	}
 
+	private void processActions() {
+		toProcess = manager.getGraphicActions();
+		for(GraphicAction action : toProcess){
 
-	/**
-	 * Get the time in milliseconds
-	 * 
-	 * @return The system time in milliseconds
-	 */
-	public long getTime() {
-		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+			switch(action.actionType){
+
+			case	CREATE:
+				GameRenderable temp = toDraw.get(((CreateGameRenderable) action).iD);
+
+				if(temp==null){
+					System.out.println("Creating a suzanne! ID: "+((CreateGameRenderable) action).iD);
+					GameRenderable graphicalObject = SimpleObjLoader.loadObjFromFile(Paths.get("Resources/Objects/emptyCube.obj"));
+					graphicalObject.transform = ((CreateGameRenderable) action).positionInfo;
+					toDraw.put(((CreateGameRenderable) action).iD, graphicalObject);
+				}else{
+					try {
+						throw new Exception("Object ID already present!");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						System.exit(0);
+					}
+				}
+				break;
+
+			case	REMOVE:
+				temp = toDraw.get(((RemoveGameRenderable) action).iD);
+
+				if(temp!=null){
+					System.out.println("Removing a suzanne! ID: "+((RemoveGameRenderable) action).iD);
+					toDraw.remove(((RemoveGameRenderable) action).iD);
+				}else{
+					try {
+						throw new Exception("Object ID does not exist!");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						System.exit(0);
+					}
+				}
+			}
+		}
+	}
+
+	private void render() {
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
+
+		for(GameRenderable renderable : toDraw.values()){
+			renderable.render();
+		}
+
+		updateFPS();
+	}
+
+	@Override
+	public void run() {
+		
+		init(mode, fullScreen, vSync);
+
+		while (!Display.isCloseRequested()) {			
+			processActions();
+			render();
+			Display.update();					
+		}
+
+		Display.destroy();
+
 	}
 
 	/**
@@ -144,50 +209,6 @@ public class GraphicEngine implements Runnable{
 			lastFPS += 1000; // add one second
 		}
 		fps++;
-	}
-
-	public int getDelta() {
-		long time = getTime();
-		int delta = (int) (time - lastFrame);
-		lastFrame = time;
-
-		return delta;
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-getDelta();
-
-
-		init(mode, fullScreen, vSync);
-		
-				while (!Display.isCloseRequested()) {
-					int delta = getDelta();
-					angle += delta / 10.f;
-					if (angle >= 360.0f)
-						angle = 0;
-					
-					processActions();
-					render(delta);
-					Display.update();					
-				}
-
-				Display.destroy();
-		
-	}
-
-	private void processActions() {
-		toProcess = manager.getGraphicActions();
-		for(GraphicAction action : toProcess){
-			if(action instanceof CreateGameRenderable){
-				System.out.println("we have an action!");
-			}else{
-				if(action instanceof CreateGameRenderable_dummy){
-					System.out.println("Creating new suzanne!!");
-					toDraw.add(SimpleObjLoader.loadObjFromFile(Paths.get("Resources/Objects/suzanne.obj")));
-				}
-			}
-		}
 	}
 
 }

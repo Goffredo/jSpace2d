@@ -10,8 +10,11 @@ package base.graphics;
  */
 public class RemoveGameRenderable extends GraphicAction{
 
+	public Integer iD;
+	
     public RemoveGameRenderable(Integer iD) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    	super(ActionType.REMOVE);
+        this.iD = iD;
     }
     
 }

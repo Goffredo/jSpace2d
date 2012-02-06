@@ -17,9 +17,9 @@ public class ModeChooser extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		assert (this.getWindows().length==1);
+		assert (Window.getWindows().length==1);
 		Window w;
-		w = this.getWindows()[0];
+		w = Window.getWindows()[0];
 		w.getToolkit().getSystemEventQueue().postEvent(new WindowEvent(w, WindowEvent.WINDOW_CLOSING));
 
 	}

@@ -1,9 +1,10 @@
 package base.graphics.engine.simpleChooser;
 
 import base.ActionManager;
-import base.graphics.CreateGameRenderable;
-import base.graphics.CreateGameRenderable_dummy;
 import base.graphics.engine.main.GraphicEngine;
+import base.physic.NewBodyAction;
+import base.physic.engine.PhysicsManager;
+
 import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -12,10 +13,13 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-import org.jbox2d.common.Mat22;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -23,14 +27,14 @@ import org.lwjgl.opengl.DisplayMode;
 
 public class Launcher implements WindowListener {
 
-	private static DisplayMode mode;
 	private static ModeChooser frame;
+	private static DisplayMode mode;
 
 	private JComboBox<DisplayMode> comboBox;
-	private CountDownLatch loginSignal;
 	private Boolean fullScreen;
-	private Boolean vSync;
 	private JCheckBox fullScreenCheckBox;
+	private CountDownLatch loginSignal;
+	private Boolean vSync;
 	private JCheckBox vSyncCheckBox;
 	
 	public Launcher(){
@@ -54,16 +58,38 @@ public class Launcher implements WindowListener {
 		Thread graphics = new Thread(test);
 		graphics.start();
 		
+		PhysicsManager pManager = new PhysicsManager(aManager);
+		createRandomActions(aManager);
+		while(true){
+			try {
+				pManager.update();
+				Thread.sleep(10);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	private void createRandomActions(ActionManager aManager) {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Transform transform = new Transform();
-		transform.set(new Vec2(0.0f,0.0f), (float)(Math.PI/2));
-		aManager.addGraphicsAction(new CreateGameRenderable_dummy(0, 0, transform));
-			
+		BodyDef bd = new BodyDef();
+		FixtureDef fd = new FixtureDef();
+		fd.density = 5.0f;
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(2.0f, 2.0f);
+		fd.shape = shape;
+		fd.restitution = 0.5f;
+		bd.type = BodyType.DYNAMIC;
+		bd.position = new Vec2(0.0f, 0.0f);
+		bd.angle = MathUtils.HALF_PI/4;
+		aManager.addPhysicAction(new NewBodyAction(bd,fd));		
 	}
 
 	private void simpleModeSelectorUI(DisplayMode[] dModes) {
@@ -95,9 +121,14 @@ public class Launcher implements WindowListener {
 	}
 
 	@Override
-	public void windowOpened(WindowEvent e) {
+	public void windowActivated(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		System.out.println("Window closed.");
 	}
 
 	@Override
@@ -110,12 +141,7 @@ public class Launcher implements WindowListener {
 	}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
-		System.out.println("Window closed.");
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
+	public void windowDeactivated(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -127,13 +153,13 @@ public class Launcher implements WindowListener {
 	}
 
 	@Override
-	public void windowActivated(WindowEvent e) {
+	public void windowIconified(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {
+	public void windowOpened(WindowEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
