@@ -68,6 +68,7 @@ public class SimpleObjLoader {
 				}
 			}
 		}
+		System.out.println("loaded model with "+triangles.size()+" triangles\n");
 
 		return new ObjMesh(triangles);		
 	}

@@ -17,6 +17,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.vector.Vector3f;
 
 public class GraphicEngine implements Runnable{
 
@@ -30,6 +31,7 @@ public class GraphicEngine implements Runnable{
 	private HashMap<Integer,GameRenderable> toDraw = new HashMap<Integer,GameRenderable>();
 	private ArrayList<GraphicAction> toProcess = new ArrayList<GraphicAction>();
 	private boolean vSync;
+	private Vector3f cameraPos = new Vector3f(20, 50, 130);
 
 	/**
 	 * Manages graphics.
@@ -103,10 +105,10 @@ public class GraphicEngine implements Runnable{
 
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GLU.gluPerspective(45.0f, (float) width / (float) height, 1, 100);
+		GLU.gluPerspective(45.0f, (float) width / (float) height, 1, 1000);
 
 		float mat_specular[] = { 1.0f, 1.0f, 1.0f, 0.1f };
-		float light_position[] = { 0.0f, -1.0f, 0.5f, 0.0f };
+		float light_position[] = { 0.0f, 1.0f, 1.0f, 0.0f };
 		GL11.glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 
@@ -117,9 +119,7 @@ public class GraphicEngine implements Runnable{
 
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-		GLU.gluLookAt(0, 0, 50, 0, 0, -1, 0, 1, 0);
-
-
+		GLU.gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z, 0, 0, -1, 0, 1, 0);
 
 		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
 
@@ -139,7 +139,7 @@ public class GraphicEngine implements Runnable{
 				GameRenderable temp = toDraw.get(((CreateGameRenderable) action).iD);
 
 				if(temp==null){
-					System.out.println("Creating a suzanne! ID: "+((CreateGameRenderable) action).iD);
+					System.out.println("Creating graphical object! ID: "+((CreateGameRenderable) action).iD);
 					GameRenderable graphicalObject = SimpleObjLoader.loadObjFromFile(Paths.get("Resources/Objects/emptyCube.obj"));
 					graphicalObject.transform = ((CreateGameRenderable) action).positionInfo;
 					toDraw.put(((CreateGameRenderable) action).iD, graphicalObject);
@@ -178,8 +178,12 @@ public class GraphicEngine implements Runnable{
 		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
 
 		for(GameRenderable renderable : toDraw.values()){
+			
 			renderable.render();
+			
 		}
+		GL11.glFlush();
+		GL11.glFinish();
 
 		updateFPS();
 	}
@@ -189,10 +193,17 @@ public class GraphicEngine implements Runnable{
 		
 		init(mode, fullScreen, vSync);
 
-		while (!Display.isCloseRequested()) {			
+		while (!Display.isCloseRequested()) {
+			
 			processActions();
+			
 			render();
-			Display.update();					
+			
+			
+			//long timer = System.nanoTime();
+			Display.update();
+			//System.out.println("render: "+(System.nanoTime()-timer)/1000000);
+			//Display.sync(60);
 		}
 
 		Display.destroy();
@@ -205,6 +216,7 @@ public class GraphicEngine implements Runnable{
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
 			Display.setTitle("FPS: " + fps);
+			System.out.println("fps: "+fps);
 			fps = 0; // reset the FPS counter
 			lastFPS += 1000; // add one second
 		}

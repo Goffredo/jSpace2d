@@ -32,19 +32,22 @@ public class ObjMesh extends GameRenderable{
 		System.out.println(System.nanoTime()-time);
 		*/
 		
+		//long timer = System.nanoTime();
+		
+		trianglesBuffer.rewind();
 		
 		GL11.glTranslatef(transform.position.x, transform.position.y, 0.0f);
 		GL11.glRotatef((float)Math.toDegrees(transform.getAngle()), 0, 0, 1);
 		
-		GL11.glBegin(GL11.GL_TRIANGLES);
+		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+		GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+		GL11.glVertexPointer(3, 0, trianglesBuffer);
+		GL11.glNormalPointer(0, normalsBuffer);
 		
-		trianglesBuffer.rewind();
-		normalsBuffer.rewind();
-		for(int i = 0; i < trianglesBuffer.limit()/3; i++){
-			GL11.glNormal3f(normalsBuffer.get(), normalsBuffer.get(), normalsBuffer.get());
-			GL11.glVertex3f(trianglesBuffer.get(), trianglesBuffer.get(), trianglesBuffer.get());
-		}		
-		GL11.glEnd();
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, trianglesBuffer.capacity() / 3);
+		
+		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+		GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
 		
 		GL11.glPopMatrix();
 	}

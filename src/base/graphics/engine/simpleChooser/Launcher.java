@@ -27,6 +27,7 @@ import org.lwjgl.opengl.DisplayMode;
 
 public class Launcher implements WindowListener {
 
+	private static final long physicsStep = 6250000;
 	private static ModeChooser frame;
 	private static DisplayMode mode;
 
@@ -36,60 +37,86 @@ public class Launcher implements WindowListener {
 	private CountDownLatch loginSignal;
 	private Boolean vSync;
 	private JCheckBox vSyncCheckBox;
-	
+	private long delta;
+	private long timeBuffer = 0;
+
 	public Launcher(){
 		mode = null;
 		DisplayMode[] dModes = null;
-		
+
 		try {
 			dModes = Display.getAvailableDisplayModes();
 		} catch (LWJGLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		simpleModeSelectorUI(dModes);
-		
+
 		//TODO add reference to ActionManager
-		
+
 		ActionManager aManager = new ActionManager();
-		
+
 		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync, aManager);		
 		Thread graphics = new Thread(test);
 		graphics.start();
-		
+
 		PhysicsManager pManager = new PhysicsManager(aManager);
 		createRandomActions(aManager);
+		delta = System.nanoTime();
+		timeBuffer = 0;
 		while(true){
-			try {
-				pManager.update();
-				Thread.sleep(10);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			updateTimeBuffer();
+			if(timeBuffer>physicsStep){
+				while(timeBuffer>physicsStep){					
+					try {
+						pManager.update();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					timeBuffer -= physicsStep;
+				}
+			}else{
+				try {
+					int milliseconds = (int) ((physicsStep-timeBuffer) / 1000000);
+					Thread.sleep(milliseconds/10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+
 		}
-		
+
+	}
+
+	private void updateTimeBuffer() {
+		timeBuffer += getDelta();
+		delta = System.nanoTime();
+	}
+
+	private long getDelta() {		
+		return (System.nanoTime()-delta);
 	}
 
 	private void createRandomActions(ActionManager aManager) {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		BodyDef bd = new BodyDef();
 		FixtureDef fd = new FixtureDef();
 		fd.density = 5.0f;
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(2.0f, 2.0f);
 		fd.shape = shape;
-		fd.restitution = 0.5f;
-		bd.type = BodyType.DYNAMIC;
-		bd.position = new Vec2(0.0f, 0.0f);
-		bd.angle = MathUtils.HALF_PI/4;
-		aManager.addPhysicAction(new NewBodyAction(bd,fd));		
+		fd.restitution = 0.9f;
+		fd.friction = 0.01f;
+		for(int i = 0; i<300; i++){
+			bd = new BodyDef();
+			bd.allowSleep = false;
+			bd.type = BodyType.DYNAMIC;
+			bd.angle = (float)(MathUtils.HALF_PI*Math.random());
+			bd.position = new Vec2((float)(50.0f*Math.random())-25, (float)(50.0f*Math.random())-25);
+			aManager.addPhysicAction(new NewBodyAction(bd,fd));			
+		}
 	}
 
 	private void simpleModeSelectorUI(DisplayMode[] dModes) {
@@ -123,7 +150,7 @@ public class Launcher implements WindowListener {
 	@Override
 	public void windowActivated(WindowEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -143,25 +170,25 @@ public class Launcher implements WindowListener {
 	@Override
 	public void windowDeactivated(WindowEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void windowOpened(WindowEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
