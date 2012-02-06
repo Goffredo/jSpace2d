@@ -7,17 +7,17 @@ package base;
 import base.graphics.engine.simpleChooser.Launcher;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class main {
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
 
-        Launcher l = new Launcher();
+		Launcher l = new Launcher();
 
-    }
+	}
 }

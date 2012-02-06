@@ -4,25 +4,24 @@
  */
 package base.physic;
 
-import base.physic.PhysicsAction;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.FixtureDef;
 
 /**
- *
+ * 
  * @author mauro
  */
-public class NewBodyAction extends PhysicsAction{
-    public int modelID = 0;
-    public BodyDef bodyDef;
+public class NewBodyAction extends PhysicsAction {
+	public int modelID = 0;
+	public BodyDef bodyDef;
 	public FixtureDef fixtureDef;
 
-    public NewBodyAction(BodyDef bodyDef, FixtureDef fixtureDef){
-    	this.bodyDef = bodyDef;
-    	this.fixtureDef = fixtureDef;
-    }
-    
-    public int getModelID() {
-        return modelID;
-    }
+	public NewBodyAction(BodyDef bodyDef, FixtureDef fixtureDef) {
+		this.bodyDef = bodyDef;
+		this.fixtureDef = fixtureDef;
+	}
+
+	public int getModelID() {
+		return modelID;
+	}
 }

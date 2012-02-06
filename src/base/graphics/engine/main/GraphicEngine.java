@@ -1,16 +1,10 @@
 package base.graphics.engine.main;
 
-import base.ActionManager;
-import base.graphics.CreateGameRenderable;
-import base.graphics.GraphicAction;
-import base.graphics.RemoveGameRenderable;
-import base.graphics.engine.loaders.SimpleObjLoader;
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import base.graphics.engine.objects.GameRenderable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -19,7 +13,14 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 
-public class GraphicEngine implements Runnable{
+import base.ActionManager;
+import base.graphics.CreateGameRenderable;
+import base.graphics.GraphicAction;
+import base.graphics.RemoveGameRenderable;
+import base.graphics.engine.loaders.SimpleObjLoader;
+import base.graphics.engine.objects.GameRenderable;
+
+public class GraphicEngine implements Runnable {
 
 	private int fps;
 	private boolean fullScreen;
@@ -28,7 +29,7 @@ public class GraphicEngine implements Runnable{
 	private ActionManager manager;
 	private DisplayMode mode;
 	private FloatBuffer pos;
-	private HashMap<Integer,GameRenderable> toDraw = new HashMap<Integer,GameRenderable>();
+	private HashMap<Integer, GameRenderable> toDraw = new HashMap<Integer, GameRenderable>();
 	private ArrayList<GraphicAction> toProcess = new ArrayList<GraphicAction>();
 	private boolean vSync;
 	private Vector3f cameraPos = new Vector3f(20, 50, 130);
@@ -37,14 +38,15 @@ public class GraphicEngine implements Runnable{
 	 * Manages graphics.
 	 * 
 	 * @param mode
-	 * 			  DisplayMode to set
+	 *            DisplayMode to set
 	 * @param fullscreen
 	 *            true to enable, false not to
 	 * @param vSync
 	 *            true to enable, false not to
 	 */
 
-	public GraphicEngine(DisplayMode mode, boolean fullScreen, boolean vSync, ActionManager manager) {
+	public GraphicEngine(DisplayMode mode, boolean fullScreen, boolean vSync,
+			ActionManager manager) {
 		this.mode = mode;
 		this.fullScreen = fullScreen;
 		this.vSync = vSync;
@@ -68,12 +70,11 @@ public class GraphicEngine implements Runnable{
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
 
-
 	/**
 	 * Initialize the screen, camera and light.
 	 * 
 	 * @param mode
-	 * 			  DisplayMode to set
+	 *            DisplayMode to set
 	 * @param fullscreen
 	 *            true to enable, false not to
 	 * @param vSync
@@ -109,7 +110,7 @@ public class GraphicEngine implements Runnable{
 
 		float mat_specular[] = { 1.0f, 1.0f, 1.0f, 0.1f };
 		float light_position[] = { 0.0f, 1.0f, 1.0f, 0.0f };
-		GL11.glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 
 		FloatBuffer spec = BufferUtils.createFloatBuffer(4).put(mat_specular);
@@ -131,19 +132,24 @@ public class GraphicEngine implements Runnable{
 
 	private void processActions() {
 		toProcess = manager.getGraphicActions();
-		for(GraphicAction action : toProcess){
+		for (GraphicAction action : toProcess) {
 
-			switch(action.actionType){
+			switch (action.actionType) {
 
-			case	CREATE:
-				GameRenderable temp = toDraw.get(((CreateGameRenderable) action).iD);
+			case CREATE:
+				GameRenderable temp = toDraw
+						.get(((CreateGameRenderable) action).iD);
 
-				if(temp==null){
-					System.out.println("Creating graphical object! ID: "+((CreateGameRenderable) action).iD);
-					GameRenderable graphicalObject = SimpleObjLoader.loadObjFromFile(Paths.get("Resources/Objects/emptyCube.obj"));
+				if (temp == null) {
+					System.out.println("Creating graphical object! ID: "
+							+ ((CreateGameRenderable) action).iD);
+					GameRenderable graphicalObject = SimpleObjLoader
+							.loadObjFromFile(Paths
+									.get("Resources/Objects/emptyCube.obj"));
 					graphicalObject.transform = ((CreateGameRenderable) action).positionInfo;
-					toDraw.put(((CreateGameRenderable) action).iD, graphicalObject);
-				}else{
+					toDraw.put(((CreateGameRenderable) action).iD,
+							graphicalObject);
+				} else {
 					try {
 						throw new Exception("Object ID already present!");
 					} catch (Exception e) {
@@ -153,16 +159,17 @@ public class GraphicEngine implements Runnable{
 				}
 				break;
 
-			case	REMOVE:
+			case REMOVE:
 				temp = toDraw.get(((RemoveGameRenderable) action).iD);
 
-				if(temp!=null){
-					System.out.println("Removing a suzanne! ID: "+((RemoveGameRenderable) action).iD);
+				if (temp != null) {
+					System.out.println("Removing a suzanne! ID: "
+							+ ((RemoveGameRenderable) action).iD);
 					toDraw.remove(((RemoveGameRenderable) action).iD);
-				}else{
+				} else {
 					try {
 						throw new Exception("Object ID does not exist!");
-					} catch (Exception e) {						
+					} catch (Exception e) {
 						e.printStackTrace();
 						System.exit(0);
 					}
@@ -175,10 +182,10 @@ public class GraphicEngine implements Runnable{
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
 
-		for(GameRenderable renderable : toDraw.values()){
-			
+		for (GameRenderable renderable : toDraw.values()) {
+
 			renderable.render();
-			
+
 		}
 		GL11.glFlush();
 		GL11.glFinish();
@@ -188,20 +195,19 @@ public class GraphicEngine implements Runnable{
 
 	@Override
 	public void run() {
-		
+
 		init(mode, fullScreen, vSync);
 
 		while (!Display.isCloseRequested()) {
-			
+
 			processActions();
-			
+
 			render();
-			
-			
-			//long timer = System.nanoTime();
+
+			// long timer = System.nanoTime();
 			Display.update();
-			//System.out.println("render: "+(System.nanoTime()-timer)/1000000);
-			//Display.sync(60);
+			// System.out.println("render: "+(System.nanoTime()-timer)/1000000);
+			// Display.sync(60);
 		}
 
 		Display.destroy();
@@ -214,7 +220,7 @@ public class GraphicEngine implements Runnable{
 	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
 			Display.setTitle("FPS: " + fps);
-			System.out.println("fps: "+fps);
+			System.out.println("fps: " + fps);
 			fps = 0; // reset the FPS counter
 			lastFPS += 1000; // add one second
 		}
