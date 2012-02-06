@@ -71,7 +71,7 @@ public class Launcher implements WindowListener {
 		lastCheck = delta;
 		timeBuffer = 0;
 		while (true) {
-			// updateTimeBuffer();
+
 			if (getDelta() + timeBuffer > physicsStep) {
 				timeBuffer += getDelta();
 				delta = System.nanoTime();
@@ -83,7 +83,7 @@ public class Launcher implements WindowListener {
 						pManager.update();
 						if (System.nanoTime() - timePhysics > physicsStep)
 							System.out
-									.println("Warning! Computing physics is taking too long!");
+							.println("Warning! Computing physics is taking too long!");
 						timeBuffer -= physicsStep;
 						pUpdates++;
 						updatePPS();
@@ -96,9 +96,9 @@ public class Launcher implements WindowListener {
 
 			} else {
 				try {
-
 					int milliseconds = (int) ((physicsStep - getDelta()) / 1000000);
-					Thread.sleep(milliseconds);
+					if(milliseconds>0)
+						Thread.sleep(milliseconds);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
