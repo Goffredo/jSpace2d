@@ -4,8 +4,8 @@ import base.ActionManager;
 import base.graphics.actions.CreateGameRenderable;
 import base.graphics.actions.GraphicAction;
 import base.graphics.actions.RemoveGameRenderable;
-import base.graphics.engine.loaders.SimpleObjLoader;
 import base.graphics.engine.objects.GameRenderable;
+import base.graphics.engine.objects.loaders.SimpleObjLoader;
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,19 +18,28 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 
+
+import base.ActionManager;
+import base.graphics.actions.CreateGameRenderable;
+import base.graphics.actions.GraphicAction;
+import base.graphics.actions.RemoveGameRenderable;
+import base.graphics.engine.objects.GameRenderable;
+
 public class GraphicEngine implements Runnable {
 
 	private int fps;
 	private boolean fullScreen;
 	private long lastFPS;
 	private long lastFrame;
-	private ActionManager manager;
+	private ActionManager aManager;
 	private DisplayMode mode;
 	private FloatBuffer pos;
 	private HashMap<Integer, GameRenderable> toDraw = new HashMap<Integer, GameRenderable>();
 	private ArrayList<GraphicAction> toProcess = new ArrayList<GraphicAction>();
 	private boolean vSync;
 	private Vector3f cameraPos = new Vector3f(20, 50, 130);
+
+	private ObjectManager oManager;
 
 	/**
 	 * Manages graphics.
@@ -43,12 +52,11 @@ public class GraphicEngine implements Runnable {
 	 *            true to enable, false not to
 	 */
 
-	public GraphicEngine(DisplayMode mode, boolean fullScreen, boolean vSync,
-			ActionManager manager) {
+	public GraphicEngine(DisplayMode mode, boolean fullScreen, boolean vSync, ActionManager manager) {
 		this.mode = mode;
 		this.fullScreen = fullScreen;
 		this.vSync = vSync;
-		this.manager = manager;
+		this.aManager = manager;
 	}
 
 	public int getDelta() {
@@ -84,6 +92,8 @@ public class GraphicEngine implements Runnable {
 
 	private void init(DisplayMode mode, boolean fullScreen, boolean vSync) {
 
+		// load objects
+		oManager = new ObjectManager(Paths.get("Resources/Objects"));
 		try {
 			Display.setDisplayMode(mode);
 			Display.setFullscreen(fullScreen);
@@ -129,23 +139,25 @@ public class GraphicEngine implements Runnable {
 	}
 
 	private void processActions() {
-		toProcess = manager.getGraphicActions();
+		toProcess = aManager.getGraphicActions();
 		for (GraphicAction action : toProcess) {
 
 			switch (action.actionType) {
 
 			case CREATE:
-				GameRenderable temp = toDraw
-						.get(((CreateGameRenderable) action).iD);
+				GameRenderable temp = toDraw.get(((CreateGameRenderable) action).iD);
 
 				if (temp == null) {
 					System.out.println("Creating graphical object! ID: "
 							+ ((CreateGameRenderable) action).iD);
-					GameRenderable graphicalObject = SimpleObjLoader
-							.loadObjFromFile(Paths
-									.get("Resources/Objects/emptyCube.obj"));
+					GameRenderable graphicalObject = SimpleObjLoader.loadGeometry(Paths.get("Resources/Objects/emptyCube.obj"));
 					graphicalObject.transform = ((CreateGameRenderable) action).positionInfo;
 					toDraw.put(((CreateGameRenderable) action).iD,graphicalObject);
+/*
+					System.out.println("Creating graphical object! ID: " + ((CreateGameRenderable) action).iD);
+					GameRenderable tempRenderable = oManager.requestObjMesh(((CreateGameRenderable) action).modelID, ((CreateGameRenderable) action).positionInfo );
+					toDraw.put(((CreateGameRenderable) action).iD, tempRenderable);
+					* */
 				} else {
 					try {
 						throw new Exception("Object ID already present!");
@@ -160,8 +172,7 @@ public class GraphicEngine implements Runnable {
 				temp = toDraw.get(((RemoveGameRenderable) action).iD);
 
 				if (temp != null) {
-					System.out.println("Removing a suzanne! ID: "
-							+ ((RemoveGameRenderable) action).iD);
+					System.out.println("Removing a suzanne! ID: " + ((RemoveGameRenderable) action).iD);
 					toDraw.remove(((RemoveGameRenderable) action).iD);
 				} else {
 					try {
@@ -181,7 +192,7 @@ public class GraphicEngine implements Runnable {
 
 		for (GameRenderable renderable : toDraw.values()) {
 
-			renderable.render();
+			renderable.renderInterleavedDrawArray();
 
 		}
 		GL11.glFlush();

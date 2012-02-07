@@ -56,23 +56,11 @@ public class Launcher implements WindowListener {
 
 		ActionManager aManager = new ActionManager();
 
-		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync,
-				aManager);
+		GraphicEngine test = new GraphicEngine(mode, fullScreen, vSync, aManager);
 		Thread graphics = new Thread(test);
 		graphics.start();
 
-		PhysicsManager pManager = new PhysicsManager(aManager);
-	/*	
-		Server server = new Server(aManager);
-		
-		ActionManager bManager = new ActionManager();
-		Client client1 = new Client(bManager);
-		
-		ActionManager cManager = new ActionManager();
-		Client client2 = new Client(cManager);
-		
-		NetworkManager net = new FakeNetworkManager(aManager, bManager, cManager);
-	*/	
+		PhysicsManager pManager = new PhysicsManager(aManager, physicsStep / 1000000000f);
 		createRandomActions(aManager);
 
 		delta = System.nanoTime();
@@ -92,8 +80,7 @@ public class Launcher implements WindowListener {
 						pManager.update();
 						//net.update();
 						if (System.nanoTime() - timePhysics > physicsStep)
-							System.out
-							.println("Warning! Computing physics is taking too long!");
+							System.out.println("Warning! Computing physics is taking too long!");
 						timeBuffer -= physicsStep;
 						pUpdates++;
 						updatePPS();
@@ -107,7 +94,7 @@ public class Launcher implements WindowListener {
 			} else {
 				try {
 					int milliseconds = (int) ((physicsStep - getDelta()) / 1000000);
-					if(milliseconds>0)
+					if (milliseconds > 0)
 						Thread.sleep(milliseconds);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -120,9 +107,9 @@ public class Launcher implements WindowListener {
 	}
 
 	private void createRandomActions(ActionManager aManager) {
-		
+
 		for (int i = 0; i < numberOfCubes; i++) {
-			aManager.addPhysicAction(new NewBodyActionServer(i, 0));
+			aManager.addPhysicAction(new NewBodyAction(i, 2));
 		}
 	}
 

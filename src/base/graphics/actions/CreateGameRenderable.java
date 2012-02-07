@@ -2,7 +2,6 @@ package base.graphics.actions;
 
 import base.physics.engine.Atomic3Float;
 
-
 /**
  * 
  * @author mauro

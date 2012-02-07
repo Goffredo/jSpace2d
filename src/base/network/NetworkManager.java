@@ -7,7 +7,7 @@ package base.network;
 import base.ActionManager;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class NetworkManager {
@@ -20,5 +20,4 @@ public class NetworkManager {
 	public void update(){
 		
 	}
-    
 }

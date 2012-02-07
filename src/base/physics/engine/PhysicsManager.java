@@ -1,5 +1,15 @@
 package base.physics.engine;
 
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.World;
+
 import base.ActionManager;
 import base.graphics.actions.CreateGameRenderable;
 import base.graphics.actions.RemoveGameRenderable;
@@ -8,24 +18,16 @@ import base.physics.NewBodyActionServer;
 import base.physics.PhysicsAction;
 import base.physics.RemoveBodyAction;
 import base.server.NewEntityInfo;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicIntegerArray;
-
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class PhysicsManager {
 
-	private static final float TIMESTEP = 0.0125f;
+	private final float TIMESTEP;
 	ActionManager actionManager;
 	private int actualTurn = 0;
 	float maxX = 50;
@@ -35,7 +37,9 @@ public class PhysicsManager {
 	World physicWorld;
 	HashMap<Integer, InfoBodyContainer> sortedOggetto2D = new HashMap<>();
 	
-	public PhysicsManager(ActionManager aM) {
+
+	public PhysicsManager(ActionManager aM, float timestep) {
+		TIMESTEP = timestep;
 		actionManager = aM;
 		Vec2 worldGravity = new Vec2(0.0f, -5.0f);
 		physicWorld = new World(worldGravity, true);
@@ -158,7 +162,7 @@ public class PhysicsManager {
 		for ( InfoBodyContainer info : sortedOggetto2D.values() ){
 			info.updateSharedPosition();
 		}
-		
+
 		actualTurn++;
 
 		physicWorld.step(TIMESTEP, 10, 10);
