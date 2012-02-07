@@ -2,19 +2,20 @@ package base.graphics.engine.objects;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.jbox2d.common.Transform;
 import org.lwjgl.opengl.GL11;
 
-import base.graphics.engine.objectHelpers.Triangle;
+import base.graphics.engine.objects.common.Triangle;
 
 public class ObjMesh extends GameRenderable {
 
 	public ObjMesh(ArrayList<Triangle> triangles) {
-		super(triangles, new Transform());
+		super(triangles, new AtomicIntegerArray(3));
 	}
 
-	public ObjMesh(ArrayList<Triangle> triangles, Transform transform) {
+	public ObjMesh(ArrayList<Triangle> triangles, AtomicIntegerArray transform) {
 		super(triangles, transform);
 	}
 
@@ -35,8 +36,8 @@ public class ObjMesh extends GameRenderable {
 
 		trianglesBuffer.rewind();
 
-		GL11.glTranslatef(transform.position.x, transform.position.y, 0.0f);
-		GL11.glRotatef((float) Math.toDegrees(transform.getAngle()), 0, 0, 1);
+		GL11.glTranslatef(Float.intBitsToFloat(transform.get(0)), Float.intBitsToFloat(transform.get(1)), 0.0f);
+		GL11.glRotatef((float) Math.toDegrees(Float.intBitsToFloat(transform.get(2))), 0, 0, 1);
 
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
@@ -50,7 +51,7 @@ public class ObjMesh extends GameRenderable {
 
 		GL11.glPopMatrix();
 	}
-
+/*
 	private void setRotationbuffer(FloatBuffer rotation) {
 		rotation.put(transform.R.col1.x); // 0
 		rotation.put(transform.R.col1.y); // 1
@@ -73,5 +74,5 @@ public class ObjMesh extends GameRenderable {
 		rotation.put(1); // 15
 		rotation.flip();
 	}
-
+*/
 }

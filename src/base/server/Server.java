@@ -7,7 +7,8 @@ package base.server;
 import base.network.UpdatePosition;
 import base.ActionManager;
 import base.network.NewGameEntity;
-import base.physic.NewBodyActionServer;
+import base.physics.NewBodyActionServer;
+
 import java.util.ArrayList;
 /**
  *
@@ -44,7 +45,7 @@ public class Server {
 		
 		/*Here we have update others's list*/
 		for (EntityInfo e:entitys){
-			actionManager.addNetworkAction( new UpdatePosition(e.id, e.position.position.x, e.position.position.y, e.getAngle()) );
+			actionManager.addNetworkAction( new UpdatePosition(e.id, e.getX(), e.getY(), e.getAngle()) );
 		}
     }
 }

@@ -2,12 +2,13 @@ package base.graphics.engine.objects;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.jbox2d.common.Transform;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Vector3f;
 
-import base.graphics.engine.objectHelpers.Triangle;
+import base.graphics.engine.objects.common.Triangle;
 
 public abstract class GameRenderable {
 
@@ -17,9 +18,9 @@ public abstract class GameRenderable {
 	// protected Float[] verticesArray;
 	// protected Float[] normalsArray;
 
-	public Transform transform;
+	public AtomicIntegerArray transform;
 
-	public GameRenderable(ArrayList<Triangle> triangles, Transform transform) {
+	public GameRenderable(ArrayList<Triangle> triangles, AtomicIntegerArray transform) {
 		setTriangles(triangles);
 		this.transform = transform;
 	}

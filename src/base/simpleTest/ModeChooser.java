@@ -1,4 +1,4 @@
-package base.graphics.engine.simpleChooser;
+package base.simpleTest;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;

@@ -1,4 +1,4 @@
-package base.graphics.engine.main;
+package base.graphics.engine;
 
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
@@ -14,9 +14,9 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 
 import base.ActionManager;
-import base.graphics.CreateGameRenderable;
-import base.graphics.GraphicAction;
-import base.graphics.RemoveGameRenderable;
+import base.graphics.actions.CreateGameRenderable;
+import base.graphics.actions.GraphicAction;
+import base.graphics.actions.RemoveGameRenderable;
 import base.graphics.engine.loaders.SimpleObjLoader;
 import base.graphics.engine.objects.GameRenderable;
 

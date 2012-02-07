@@ -1,4 +1,4 @@
-package base.graphics.engine.objectHelpers;
+package base.graphics.engine.objects.common;
 
 import org.lwjgl.util.vector.Vector3f;
 

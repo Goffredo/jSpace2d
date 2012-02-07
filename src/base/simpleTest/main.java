@@ -2,9 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package base;
+package base.simpleTest;
 
-import base.graphics.engine.simpleChooser.Launcher;
 
 /**
  * 

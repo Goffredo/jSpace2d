@@ -1,15 +1,22 @@
-package base.physic.engine;
+package base.physics.engine;
 
 import base.ActionManager;
-import base.graphics.CreateGameRenderable;
-import base.graphics.RemoveGameRenderable;
-import base.physic.NewBodyAction;
-import base.physic.NewBodyActionServer;
-import base.physic.PhysicsAction;
-import base.physic.RemoveBodyAction;
+import base.graphics.actions.CreateGameRenderable;
+import base.graphics.actions.RemoveGameRenderable;
+import base.physics.NewBodyAction;
+import base.physics.NewBodyActionServer;
+import base.physics.PhysicsAction;
+import base.physics.RemoveBodyAction;
 import base.server.NewEntityInfo;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
@@ -30,7 +37,8 @@ public class PhysicsManager {
 	float minY = -50;
 	World physicWorld;
 	TreeMap<Integer, Body> sortedOggetto2D = new TreeMap<>();
-
+	HashMap<Integer, AtomicIntegerArray> transformsForGraphics = new HashMap<>();
+	
 	public PhysicsManager(ActionManager aM) {
 		actionManager = aM;
 		Vec2 worldGravity = new Vec2(0.0f, -5.0f);
@@ -39,7 +47,7 @@ public class PhysicsManager {
 		createBorder();
 	}
 
-	private Transform addBody(NewBodyAction t) {
+	private AtomicIntegerArray addBody(NewBodyAction t) {
 
 		Body body = physicWorld.createBody(t.getBodyDef());
 		if (body != null) {
@@ -47,13 +55,16 @@ public class PhysicsManager {
 
 			int IDvalue = physicWorld.getBodyCount() + 1;
 			t.IDbody = new Integer(IDvalue);
-
+			final AtomicIntegerArray toGraphics = new AtomicIntegerArray(3);		
+			toGraphics.set(0, Float.floatToIntBits(body.getPosition().x));
+			toGraphics.set(1, Float.floatToIntBits(body.getPosition().y));
+			toGraphics.set(2, Float.floatToIntBits(body.getAngle()));
 			sortedOggetto2D.put(t.getID(), body);
-
+			transformsForGraphics.put(t.getID(), toGraphics);
 			System.out.println("New element in world! ID:" + t.getID());
 			System.out.println("elements in world:"
 					+ physicWorld.getBodyCount());
-			return body.getTransform();
+			return toGraphics;
 		}
 		return null;
 	}
@@ -129,7 +140,7 @@ public class PhysicsManager {
 		for (PhysicsAction t : myAction) {
 			if (t instanceof NewBodyActionServer) {
 				NewBodyActionServer actNew = (NewBodyActionServer) t;
-				Transform positionInfo = addBody(actNew);
+				AtomicIntegerArray positionInfo = addBody(actNew);
 				if (positionInfo != null) {
 					CreateGameRenderable tempA = new CreateGameRenderable(actNew.getID(), actNew.getModelID(), positionInfo);
 					actionManager.addGraphicsAction(tempA);
@@ -141,7 +152,7 @@ public class PhysicsManager {
 			}
 			if (t instanceof NewBodyAction) {
 				NewBodyAction actNew = (NewBodyAction) t;
-				Transform positionInfo = addBody(actNew);
+				AtomicIntegerArray positionInfo = addBody(actNew);
 				if (positionInfo != null) {
 					CreateGameRenderable tempA = new CreateGameRenderable(
 							actNew.getID(), actNew.getModelID(), positionInfo);
@@ -155,7 +166,22 @@ public class PhysicsManager {
 				actionManager.addGraphicsAction(tempA);
 			}
 		}
+		
+		Integer key;
+		Body body;
+		
+		for(Map.Entry<Integer, Body> entry : sortedOggetto2D.entrySet()) {
+			key = entry.getKey();
+			body = entry.getValue();
+			AtomicIntegerArray toModify = transformsForGraphics.get(key);
 
+			if(toModify != null){
+				toModify.set(0, Float.floatToIntBits(body.getPosition().x));
+				toModify.set(1, Float.floatToIntBits(body.getPosition().y));
+				toModify.set(2, Float.floatToIntBits(body.getAngle()));
+			}
+		}
+		
 		actualTurn++;
 		/*
 		 * Body body = physicWorld.getBodyList();

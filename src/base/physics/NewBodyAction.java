@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package base.physic;
+package base.physics;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.MathUtils;
@@ -44,8 +44,8 @@ public class NewBodyAction extends PhysicsAction {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(2.0f, 2.0f);
         fd.shape = shape;
-        fd.restitution = 0.8f;
-        fd.friction = 0.01f;
+        fd.restitution = 1.1f;
+        fd.friction = 0.3f;
         return fd;
     }
 }

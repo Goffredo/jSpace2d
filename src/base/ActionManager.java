@@ -1,9 +1,9 @@
 package base;
 
 import base.network.NetworkAction;
-import base.graphics.GraphicAction;
+import base.graphics.actions.GraphicAction;
 import base.network.NewGameEntity;
-import base.physic.PhysicsAction;
+import base.physics.PhysicsAction;
 import base.server.ServerAction;
 import java.util.ArrayList;
 

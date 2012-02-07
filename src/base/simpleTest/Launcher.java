@@ -1,4 +1,4 @@
-package base.graphics.engine.simpleChooser;
+package base.simpleTest;
 
 import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
@@ -9,20 +9,14 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.MathUtils;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import base.ActionManager;
-import base.graphics.engine.main.GraphicEngine;
-import base.physic.NewBodyAction;
-import base.physic.engine.PhysicsManager;
+import base.graphics.engine.GraphicEngine;
+import base.physics.NewBodyAction;
+import base.physics.engine.PhysicsManager;
 
 public class Launcher implements WindowListener {
 

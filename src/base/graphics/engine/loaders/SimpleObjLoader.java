@@ -10,8 +10,8 @@ import java.util.StringTokenizer;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import base.graphics.engine.objectHelpers.Triangle;
 import base.graphics.engine.objects.ObjMesh;
+import base.graphics.engine.objects.common.Triangle;
 
 public class SimpleObjLoader {
 

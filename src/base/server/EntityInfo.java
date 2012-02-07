@@ -4,6 +4,8 @@
  */
 package base.server;
 
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
 import org.jbox2d.common.Transform;
 
 /**
@@ -14,9 +16,9 @@ class EntityInfo extends ServerAction{
 	int id;
 	int modelID;
 	int tick;
-	Transform position;
+	AtomicIntegerArray position;
 	
-    public EntityInfo(int iD, int modelID, Transform positionInfo, int tick) {
+    public EntityInfo(int iD, int modelID, AtomicIntegerArray positionInfo, int tick) {
 		this.id = iD;
 		this.modelID = modelID;
 		this.position = positionInfo;
@@ -32,15 +34,15 @@ class EntityInfo extends ServerAction{
 	}
 	
 	public float getX(){
-		return position.position.x;
+		return Float.intBitsToFloat(position.get(0));
 	}
 	
 	public float getY(){
-		return position.position.x;
+		return Float.intBitsToFloat(position.get(1));
 	}
 	
 	public float getAngle(){
-		return position.getAngle();
+		return Float.intBitsToFloat(position.get(2));
 	}
 	
 	public float getTick(){
