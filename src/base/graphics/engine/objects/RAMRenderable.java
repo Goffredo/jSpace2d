@@ -5,18 +5,18 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.lwjgl.opengl.GL11;
 
-public class ObjMesh extends GameRenderable {
+public class RAMRenderable extends GameRenderable {
 
 	protected FloatBuffer normalsBuffer;
 	protected FloatBuffer verticesBuffer;
 	protected FloatBuffer interleavedBuffer;
 
-	private ObjMesh(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer) {
+	private RAMRenderable(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer) {
 		super(new AtomicIntegerArray(3));
 		setBuffers(verticesBuffer, normalsBuffer, interleavedBuffer);
 	}
 
-	public ObjMesh(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer, AtomicIntegerArray transform) {
+	public RAMRenderable(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer, AtomicIntegerArray transform) {
 		super(transform);
 		setBuffers(verticesBuffer, normalsBuffer, interleavedBuffer);
 	}

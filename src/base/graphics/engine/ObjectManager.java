@@ -8,7 +8,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import base.graphics.engine.objects.ObjMesh;
+import org.lwjgl.opengl.ARBVertexBufferObject;
+
+import base.graphics.engine.objects.RAMRenderable;
+import base.graphics.engine.objects.VBORenderable;
 import base.graphics.engine.objects.common.Mesh;
 import base.graphics.engine.objects.common.Triangle;
 import base.graphics.engine.objects.loaders.SimpleObjLoader;
@@ -42,7 +45,7 @@ public class ObjectManager {
 		ArrayList<Triangle> triangles = SimpleObjLoader.loadGeometry(pathToModel);
 
 		System.out.println("loaded: " + pathToModel.getFileName().toString() + " with " + triangles.size() + " triangles");
-		
+
 		Mesh out = new Mesh(triangles, pathToModel.getFileName().toString());
 		return out;
 	}
@@ -69,10 +72,23 @@ public class ObjectManager {
 	}
 
 	//TODO request by name?
-	public ObjMesh requestObjMesh(int modelIndex, AtomicIntegerArray transform){
+	public RAMRenderable requestObjMesh(int modelIndex, AtomicIntegerArray transform){
 		Mesh temp = models[modelIndex];
-		ObjMesh out = new ObjMesh(temp.verticesBuffer,temp.normalsBuffer,temp.interleavedBuffer, transform);
+		RAMRenderable out = new RAMRenderable(temp.verticesBuffer,temp.normalsBuffer,temp.interleavedBuffer, transform);
 		return out;
 	}
-	
+
+	//TODO request by name?
+	public VBORenderable requestVBOMesh(int modelIndex, AtomicIntegerArray transform){
+		Mesh temp = models[modelIndex];
+		int vertexVBOID = GPUManager.createVBOID();
+		temp.verticesBuffer.rewind();
+		GPUManager.bufferData(vertexVBOID, temp.verticesBuffer, ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+		int normalVBOID = GPUManager.createVBOID();
+		temp.normalsBuffer.rewind();
+		GPUManager.bufferData(normalVBOID, temp.normalsBuffer, ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+		VBORenderable out = new VBORenderable(vertexVBOID, normalVBOID, temp.triangles.size(), transform);
+		return out;
+	}
+
 }

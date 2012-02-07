@@ -34,25 +34,13 @@ public class Mesh {
 			faceVertices = triangles.get(i).vertices;
 			faceNormals = triangles.get(i).normals;
 
-			verticesBuffer.put(faceVertices[0].x).put(faceVertices[0].y).put(faceVertices[0].z); // vertex
-			// 1
-			verticesBuffer.put(faceVertices[1].x).put(faceVertices[1].y).put(faceVertices[1].z); // vertex
-			// 2
-			verticesBuffer.put(faceVertices[2].x).put(faceVertices[2].y).put(faceVertices[2].z); // vertex
-			// 3
+			verticesBuffer.put(faceVertices[0].x).put(faceVertices[0].y).put(faceVertices[0].z);
+			verticesBuffer.put(faceVertices[1].x).put(faceVertices[1].y).put(faceVertices[1].z);
+			verticesBuffer.put(faceVertices[2].x).put(faceVertices[2].y).put(faceVertices[2].z);
 
-			normalsBuffer.put(faceNormals[0].x).put(faceNormals[0].y).put(faceNormals[0].z); // normal
-			// for
-			// vertex
-			// 1
-			normalsBuffer.put(faceNormals[1].x).put(faceNormals[1].y).put(faceNormals[1].z); // normal
-			// for
-			// vertex
-			// 2
-			normalsBuffer.put(faceNormals[2].x).put(faceNormals[2].y).put(faceNormals[2].z); // normal
-			// for
-			// vertex
-			// 3
+			normalsBuffer.put(faceNormals[0].x).put(faceNormals[0].y).put(faceNormals[0].z);
+			normalsBuffer.put(faceNormals[1].x).put(faceNormals[1].y).put(faceNormals[1].z);
+			normalsBuffer.put(faceNormals[2].x).put(faceNormals[2].y).put(faceNormals[2].z);
 
 			interleavedBuffer.put(faceNormals[0].x).put(faceNormals[0].y).put(faceNormals[0].z); // normal
 			// for
