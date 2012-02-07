@@ -1,10 +1,15 @@
 package base.graphics.engine;
 
+import base.ActionManager;
+import base.graphics.actions.CreateGameRenderable;
+import base.graphics.actions.GraphicAction;
+import base.graphics.actions.RemoveGameRenderable;
+import base.graphics.engine.loaders.SimpleObjLoader;
+import base.graphics.engine.objects.GameRenderable;
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.Display;
@@ -12,13 +17,6 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
-
-import base.ActionManager;
-import base.graphics.actions.CreateGameRenderable;
-import base.graphics.actions.GraphicAction;
-import base.graphics.actions.RemoveGameRenderable;
-import base.graphics.engine.loaders.SimpleObjLoader;
-import base.graphics.engine.objects.GameRenderable;
 
 public class GraphicEngine implements Runnable {
 
@@ -147,8 +145,7 @@ public class GraphicEngine implements Runnable {
 							.loadObjFromFile(Paths
 									.get("Resources/Objects/emptyCube.obj"));
 					graphicalObject.transform = ((CreateGameRenderable) action).positionInfo;
-					toDraw.put(((CreateGameRenderable) action).iD,
-							graphicalObject);
+					toDraw.put(((CreateGameRenderable) action).iD,graphicalObject);
 				} else {
 					try {
 						throw new Exception("Object ID already present!");

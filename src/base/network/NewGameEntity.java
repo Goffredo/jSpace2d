@@ -10,7 +10,7 @@ package base.network;
  */
 public class NewGameEntity extends NetworkAction{
 
-	public NewGameEntity(int iD, int modelID, float x, float y, float angle, float tick) {
+	public NewGameEntity(int iD, int modelID, float[] pos, float tick) {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 	

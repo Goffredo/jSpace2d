@@ -4,9 +4,7 @@
  */
 package base.server;
 
-import java.util.concurrent.atomic.AtomicIntegerArray;
-
-import org.jbox2d.common.Transform;
+import base.physics.engine.Atomic3Float;
 
 /**
  *
@@ -14,7 +12,7 @@ import org.jbox2d.common.Transform;
  */
 public class NewEntityInfo extends EntityInfo{
 
-	public NewEntityInfo(Integer iD, int modelID, AtomicIntegerArray positionInfo, int actualTurn) {
+	public NewEntityInfo(Integer iD, int modelID, Atomic3Float positionInfo, int actualTurn) {
 		super(iD, modelID, positionInfo, actualTurn);
 	}
 

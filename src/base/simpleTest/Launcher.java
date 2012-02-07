@@ -1,22 +1,25 @@
 package base.simpleTest;
 
+import base.server.client.Client;
+import base.ActionManager;
+import base.graphics.engine.GraphicEngine;
+import base.network.FakeNetworkManager;
+import base.network.NetworkManager;
+import base.physics.NewBodyAction;
+import base.physics.NewBodyActionServer;
+import base.physics.engine.PhysicsManager;
+import base.server.Server;
+import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
 import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.concurrent.CountDownLatch;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-
-import base.ActionManager;
-import base.graphics.engine.GraphicEngine;
-import base.physics.NewBodyAction;
-import base.physics.engine.PhysicsManager;
 
 public class Launcher implements WindowListener {
 
@@ -59,6 +62,17 @@ public class Launcher implements WindowListener {
 		graphics.start();
 
 		PhysicsManager pManager = new PhysicsManager(aManager);
+	/*	
+		Server server = new Server(aManager);
+		
+		ActionManager bManager = new ActionManager();
+		Client client1 = new Client(bManager);
+		
+		ActionManager cManager = new ActionManager();
+		Client client2 = new Client(cManager);
+		
+		NetworkManager net = new FakeNetworkManager(aManager, bManager, cManager);
+	*/	
 		createRandomActions(aManager);
 
 		delta = System.nanoTime();
@@ -74,7 +88,9 @@ public class Launcher implements WindowListener {
 
 					try {
 						long timePhysics = System.nanoTime();
+						//server.update();
 						pManager.update();
+						//net.update();
 						if (System.nanoTime() - timePhysics > physicsStep)
 							System.out
 							.println("Warning! Computing physics is taking too long!");
@@ -106,7 +122,7 @@ public class Launcher implements WindowListener {
 	private void createRandomActions(ActionManager aManager) {
 		
 		for (int i = 0; i < numberOfCubes; i++) {
-			aManager.addPhysicAction(new NewBodyAction(i, 0));
+			aManager.addPhysicAction(new NewBodyActionServer(i, 0));
 		}
 	}
 

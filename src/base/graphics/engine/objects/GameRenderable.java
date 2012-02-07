@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Vector3f;
 
 import base.graphics.engine.objects.common.Triangle;
+import base.physics.engine.Atomic3Float;
 
 public abstract class GameRenderable {
 
@@ -18,9 +19,9 @@ public abstract class GameRenderable {
 	// protected Float[] verticesArray;
 	// protected Float[] normalsArray;
 
-	public AtomicIntegerArray transform;
+	public Atomic3Float transform;
 
-	public GameRenderable(ArrayList<Triangle> triangles, AtomicIntegerArray transform) {
+	public GameRenderable(ArrayList<Triangle> triangles, Atomic3Float transform) {
 		setTriangles(triangles);
 		this.transform = transform;
 	}

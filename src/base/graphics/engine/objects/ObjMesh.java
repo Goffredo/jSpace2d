@@ -8,14 +8,17 @@ import org.jbox2d.common.Transform;
 import org.lwjgl.opengl.GL11;
 
 import base.graphics.engine.objects.common.Triangle;
+import base.physics.engine.Atomic3Float;
 
 public class ObjMesh extends GameRenderable {
 
+	float position[];
+	
 	public ObjMesh(ArrayList<Triangle> triangles) {
-		super(triangles, new AtomicIntegerArray(3));
+		super(triangles, new Atomic3Float());
 	}
 
-	public ObjMesh(ArrayList<Triangle> triangles, AtomicIntegerArray transform) {
+	public ObjMesh(ArrayList<Triangle> triangles, Atomic3Float transform) {
 		super(triangles, transform);
 	}
 
@@ -36,8 +39,9 @@ public class ObjMesh extends GameRenderable {
 
 		trianglesBuffer.rewind();
 
-		GL11.glTranslatef(Float.intBitsToFloat(transform.get(0)), Float.intBitsToFloat(transform.get(1)), 0.0f);
-		GL11.glRotatef((float) Math.toDegrees(Float.intBitsToFloat(transform.get(2))), 0, 0, 1);
+		position = transform.get();
+		GL11.glTranslatef(position[0], position[1], 0.0f);
+		GL11.glRotatef((float) Math.toDegrees(position[2]), 0, 0, 1);
 
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);

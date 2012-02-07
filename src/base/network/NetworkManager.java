@@ -17,5 +17,8 @@ public class NetworkManager {
         actionManager = am;
     }
     
+	public void update(){
+		
+	}
     
 }
