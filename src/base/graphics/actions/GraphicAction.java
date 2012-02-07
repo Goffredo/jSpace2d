@@ -5,18 +5,19 @@
 package base.graphics.actions;
 
 /**
- *
+ * 
  * @author mauro
  */
 public abstract class GraphicAction {
 
-    public enum ActionType {
+	public enum ActionType {
 
-        CREATE, REMOVE
-    }
-    public ActionType actionType;
+		CREATE, REMOVE
+	}
 
-    public GraphicAction(ActionType actionType) {
-        this.actionType = actionType;
-    }
+	public ActionType actionType;
+
+	public GraphicAction(ActionType actionType) {
+		this.actionType = actionType;
+	}
 }

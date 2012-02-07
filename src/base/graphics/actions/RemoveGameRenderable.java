@@ -4,9 +4,8 @@
  */
 package base.graphics.actions;
 
-
 /**
- *
+ * 
  * @author mauro
  */
 public class RemoveGameRenderable extends GraphicAction {

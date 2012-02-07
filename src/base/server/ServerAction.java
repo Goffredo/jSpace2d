@@ -5,9 +5,9 @@
 package base.server;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class ServerAction {
-	
+
 }

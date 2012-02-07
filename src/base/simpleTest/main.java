@@ -4,7 +4,6 @@
  */
 package base.simpleTest;
 
-
 /**
  * 
  * @author mauro

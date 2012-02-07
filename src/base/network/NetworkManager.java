@@ -7,15 +7,14 @@ package base.network;
 import base.ActionManager;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class NetworkManager {
-    ActionManager actionManager;
-    
-    public NetworkManager(ActionManager am){
-        actionManager = am;
-    }
-    
-    
+	ActionManager actionManager;
+
+	public NetworkManager(ActionManager am) {
+		actionManager = am;
+	}
+
 }

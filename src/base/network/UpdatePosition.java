@@ -5,12 +5,12 @@
 package base.network;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class UpdatePosition extends NetworkAction {
 
 	public UpdatePosition(int id, float x, float y, float angle) {
 	}
-	
+
 }

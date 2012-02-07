@@ -5,9 +5,9 @@
 package base.network;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class NetworkAction {
-	
+
 }

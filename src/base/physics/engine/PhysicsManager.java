@@ -1,5 +1,19 @@
 package base.physics.engine;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.World;
+
 import base.ActionManager;
 import base.graphics.actions.CreateGameRenderable;
 import base.graphics.actions.RemoveGameRenderable;
@@ -8,27 +22,14 @@ import base.physics.NewBodyActionServer;
 import base.physics.PhysicsAction;
 import base.physics.RemoveBodyAction;
 import base.server.NewEntityInfo;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicIntegerArray;
-
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.*;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class PhysicsManager {
 
-	private static final float TIMESTEP = 0.0125f;
+	private final float TIMESTEP;
 	ActionManager actionManager;
 	private int actualTurn = 0;
 	float maxX = 50;
@@ -38,8 +39,9 @@ public class PhysicsManager {
 	World physicWorld;
 	TreeMap<Integer, Body> sortedOggetto2D = new TreeMap<>();
 	HashMap<Integer, AtomicIntegerArray> transformsForGraphics = new HashMap<>();
-	
-	public PhysicsManager(ActionManager aM) {
+
+	public PhysicsManager(ActionManager aM, float timestep) {
+		TIMESTEP = timestep;
 		actionManager = aM;
 		Vec2 worldGravity = new Vec2(0.0f, -5.0f);
 		physicWorld = new World(worldGravity, true);
@@ -55,15 +57,14 @@ public class PhysicsManager {
 
 			int IDvalue = physicWorld.getBodyCount() + 1;
 			t.IDbody = new Integer(IDvalue);
-			final AtomicIntegerArray toGraphics = new AtomicIntegerArray(3);		
+			final AtomicIntegerArray toGraphics = new AtomicIntegerArray(3);
 			toGraphics.set(0, Float.floatToIntBits(body.getPosition().x));
 			toGraphics.set(1, Float.floatToIntBits(body.getPosition().y));
 			toGraphics.set(2, Float.floatToIntBits(body.getAngle()));
 			sortedOggetto2D.put(t.getID(), body);
 			transformsForGraphics.put(t.getID(), toGraphics);
 			System.out.println("New element in world! ID:" + t.getID());
-			System.out.println("elements in world:"
-					+ physicWorld.getBodyCount());
+			System.out.println("elements in world:" + physicWorld.getBodyCount());
 			return toGraphics;
 		}
 		return null;
@@ -154,8 +155,7 @@ public class PhysicsManager {
 				NewBodyAction actNew = (NewBodyAction) t;
 				AtomicIntegerArray positionInfo = addBody(actNew);
 				if (positionInfo != null) {
-					CreateGameRenderable tempA = new CreateGameRenderable(
-							actNew.getID(), actNew.getModelID(), positionInfo);
+					CreateGameRenderable tempA = new CreateGameRenderable(actNew.getID(), actNew.getModelID(), positionInfo);
 					actionManager.addGraphicsAction(tempA);
 				} else {
 					throw new Exception("Body creation failed");
@@ -166,26 +166,26 @@ public class PhysicsManager {
 				actionManager.addGraphicsAction(tempA);
 			}
 		}
-		
+
 		Integer key;
 		Body body;
-		
-		for(Map.Entry<Integer, Body> entry : sortedOggetto2D.entrySet()) {
+
+		for (Map.Entry<Integer, Body> entry : sortedOggetto2D.entrySet()) {
 			key = entry.getKey();
 			body = entry.getValue();
 			AtomicIntegerArray toModify = transformsForGraphics.get(key);
 
-			if(toModify != null){
+			if (toModify != null) {
 				toModify.set(0, Float.floatToIntBits(body.getPosition().x));
 				toModify.set(1, Float.floatToIntBits(body.getPosition().y));
 				toModify.set(2, Float.floatToIntBits(body.getAngle()));
 			}
 		}
-		
+
 		actualTurn++;
 		/*
 		 * Body body = physicWorld.getBodyList();
-		 *
+		 * 
 		 * while(body!=null){ System.out.println(body.getTransform().position);
 		 * body = body.getNext(); }
 		 */

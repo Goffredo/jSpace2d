@@ -2,7 +2,6 @@ package base.graphics.actions;
 
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-
 /**
  * 
  * @author mauro
