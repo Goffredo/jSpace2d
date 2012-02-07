@@ -73,7 +73,9 @@ public class Launcher implements WindowListener {
 
 					try {
 						long timePhysics = System.nanoTime();
+						// server.update();
 						pManager.update();
+						// net.update();
 						if (System.nanoTime() - timePhysics > physicsStep)
 							System.out.println("Warning! Computing physics is taking too long!");
 						timeBuffer -= physicsStep;

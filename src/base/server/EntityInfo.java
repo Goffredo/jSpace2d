@@ -4,7 +4,7 @@
  */
 package base.server;
 
-import java.util.concurrent.atomic.AtomicIntegerArray;
+import base.physics.engine.Atomic3Float;
 
 /**
  * 
@@ -14,9 +14,10 @@ class EntityInfo extends ServerAction {
 	int id;
 	int modelID;
 	int tick;
-	AtomicIntegerArray position;
+	Atomic3Float position;
 
-	public EntityInfo(int iD, int modelID, AtomicIntegerArray positionInfo, int tick) {
+	public EntityInfo(int iD, int modelID, Atomic3Float positionInfo, int tick) {
+
 		this.id = iD;
 		this.modelID = modelID;
 		this.position = positionInfo;
@@ -31,16 +32,8 @@ class EntityInfo extends ServerAction {
 		return modelID;
 	}
 
-	public float getX() {
-		return Float.intBitsToFloat(position.get(0));
-	}
-
-	public float getY() {
-		return Float.intBitsToFloat(position.get(1));
-	}
-
-	public float getAngle() {
-		return Float.intBitsToFloat(position.get(2));
+	public float[] getPosition() {
+		return position.get();
 	}
 
 	public float getTick() {

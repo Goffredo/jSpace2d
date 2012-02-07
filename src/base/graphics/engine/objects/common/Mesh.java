@@ -24,7 +24,7 @@ public class Mesh {
 	}
 
 	private void createBuffers() {
-		
+
 		// fill Buffers
 		Vector3f[] faceVertices = null;
 		Vector3f[] faceNormals = null;

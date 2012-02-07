@@ -1,9 +1,10 @@
 package base.graphics.engine.objects;
 
 import java.nio.FloatBuffer;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.lwjgl.opengl.GL11;
+
+import base.physics.engine.Atomic3Float;
 
 public class RAMRenderable extends GameRenderable {
 
@@ -12,24 +13,24 @@ public class RAMRenderable extends GameRenderable {
 	protected FloatBuffer interleavedBuffer;
 
 	private RAMRenderable(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer) {
-		super(new AtomicIntegerArray(3));
+		super(new Atomic3Float());
 		setBuffers(verticesBuffer, normalsBuffer, interleavedBuffer);
 	}
 
-	public RAMRenderable(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer, AtomicIntegerArray transform) {
+	public RAMRenderable(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer, Atomic3Float transform) {
 		super(transform);
 		setBuffers(verticesBuffer, normalsBuffer, interleavedBuffer);
 	}
 
 	@Override
 	public void render() {
-		
+
 		GL11.glPushMatrix();
 
 		verticesBuffer.rewind();
 
-		GL11.glTranslatef(Float.intBitsToFloat(transform.get(0)), Float.intBitsToFloat(transform.get(1)), 0.0f);
-		GL11.glRotatef((float) Math.toDegrees(Float.intBitsToFloat(transform.get(2))), 0, 0, 1);
+		GL11.glTranslatef(transform.get()[0], transform.get()[1], 0.0f);
+		GL11.glRotatef((float) Math.toDegrees(transform.get()[2]), 0, 0, 1);
 
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
@@ -42,29 +43,29 @@ public class RAMRenderable extends GameRenderable {
 		GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
 
 		GL11.glPopMatrix();
-		
+
 	}
 
 	@Override
 	public void renderInterleavedDrawArray() {
-		
+
 		GL11.glPushMatrix();
 
-		GL11.glTranslatef(Float.intBitsToFloat(transform.get(0)), Float.intBitsToFloat(transform.get(1)), 0.0f);
-		GL11.glRotatef((float) Math.toDegrees(Float.intBitsToFloat(transform.get(2))), 0, 0, 1);
+		GL11.glTranslatef(transform.get()[0], transform.get()[1], 0.0f);
+		GL11.glRotatef((float) Math.toDegrees(transform.get()[2]), 0, 0, 1);
 
 		GL11.glInterleavedArrays(GL11.GL_N3F_V3F, 0, interleavedBuffer);
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, interleavedBuffer.capacity() / 6);
 
 		GL11.glPopMatrix();
-		
+
 	}
 
 	public void setBuffers(FloatBuffer verticesBuffer, FloatBuffer normalsBuffer, FloatBuffer interleavedBuffer) {
-		
+
 		this.verticesBuffer = verticesBuffer;
 		this.normalsBuffer = normalsBuffer;
 		this.interleavedBuffer = interleavedBuffer;
-		
+
 	}
 }

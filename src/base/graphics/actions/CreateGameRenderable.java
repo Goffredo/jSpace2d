@@ -1,6 +1,6 @@
 package base.graphics.actions;
 
-import java.util.concurrent.atomic.AtomicIntegerArray;
+import base.physics.engine.Atomic3Float;
 
 /**
  * 
@@ -10,9 +10,9 @@ public class CreateGameRenderable extends GraphicAction {
 
 	public Integer iD;
 	public int modelID;
-	public AtomicIntegerArray positionInfo;
+	public Atomic3Float positionInfo;
 
-	public CreateGameRenderable(Integer iD, int modelID, AtomicIntegerArray positionInfo) {
+	public CreateGameRenderable(Integer iD, int modelID, Atomic3Float positionInfo) {
 		super(ActionType.CREATE);
 		this.iD = iD;
 		this.modelID = modelID;

@@ -2,15 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package base.network;
+package base.server.client;
+
+import base.ActionManager;
 
 /**
  * 
  * @author mauro
  */
-public class NewGameEntity extends NetworkAction {
+public class Client {
 
-	public NewGameEntity(int iD, int modelID, float[] pos, float tick) {
+	public Client(ActionManager bManager) {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 

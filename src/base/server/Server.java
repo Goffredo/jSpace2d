@@ -34,17 +34,18 @@ public class Server {
 
 		/* Here we have update our list */
 		ArrayList<ServerAction> serverActions = actionManager.getServerActions();
+
 		for (ServerAction a : serverActions) {
 			if (a instanceof NewEntityInfo) {
 				NewEntityInfo nI = (NewEntityInfo) a;
-				actionManager.addNetworkAction(new NewGameEntity(nI.getID(), nI.getModelID(), nI.getX(), nI.getY(), nI.getAngle(), nI.getTick()));
+				actionManager.addNetworkAction(new NewGameEntity(nI.getID(), nI.getModelID(), nI.getPosition(), nI.getTick()));
 				entitys.add(nI);
 			}
 		}
 
 		/* Here we have update others's list */
 		for (EntityInfo e : entitys) {
-			actionManager.addNetworkAction(new UpdatePosition(e.id, e.getX(), e.getY(), e.getAngle()));
+			actionManager.addNetworkAction(new UpdatePosition(e.id, e.getPosition()));
 		}
 	}
 }

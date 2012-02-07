@@ -143,7 +143,7 @@ public class GraphicEngine implements Runnable {
 
 				if (temp == null) {
 					System.out.println("Creating graphical object! ID: " + ((CreateGameRenderable) action).iD);
-					GameRenderable tempRenderable = oManager.requestVBOMesh(((CreateGameRenderable) action).modelID, ((CreateGameRenderable) action).positionInfo );
+					GameRenderable tempRenderable = oManager.requestVBOMesh(((CreateGameRenderable) action).modelID, ((CreateGameRenderable) action).positionInfo);
 					toDraw.put(((CreateGameRenderable) action).iD, tempRenderable);
 				} else {
 					try {

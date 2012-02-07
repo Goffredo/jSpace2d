@@ -1,12 +1,12 @@
 package base.graphics.engine.objects;
 
-import java.util.concurrent.atomic.AtomicIntegerArray;
+import base.physics.engine.Atomic3Float;
 
 public abstract class GameRenderable {
 
-	public AtomicIntegerArray transform;
+	public Atomic3Float transform;
 
-	public GameRenderable(AtomicIntegerArray transform) {
+	public GameRenderable(Atomic3Float transform) {
 		this.transform = transform;
 	}
 

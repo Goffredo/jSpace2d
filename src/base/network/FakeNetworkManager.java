@@ -10,14 +10,9 @@ import base.ActionManager;
  * 
  * @author mauro
  */
-public class NetworkManager {
-	ActionManager actionManager;
+public class FakeNetworkManager extends NetworkManager {
 
-	public NetworkManager(ActionManager am) {
-		actionManager = am;
-	}
-
-	public void update() {
-
+	public FakeNetworkManager(ActionManager aManager, ActionManager bManager, ActionManager cManager) {
+		super(aManager);
 	}
 }

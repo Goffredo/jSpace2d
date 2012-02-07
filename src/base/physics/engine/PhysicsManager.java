@@ -2,9 +2,6 @@ package base.physics.engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -37,8 +34,7 @@ public class PhysicsManager {
 	float minX = -50;
 	float minY = -50;
 	World physicWorld;
-	TreeMap<Integer, Body> sortedOggetto2D = new TreeMap<>();
-	HashMap<Integer, AtomicIntegerArray> transformsForGraphics = new HashMap<>();
+	HashMap<Integer, InfoBodyContainer> sortedOggetto2D = new HashMap<>();
 
 	public PhysicsManager(ActionManager aM, float timestep) {
 		TIMESTEP = timestep;
@@ -49,7 +45,7 @@ public class PhysicsManager {
 		createBorder();
 	}
 
-	private AtomicIntegerArray addBody(NewBodyAction t) {
+	private InfoBodyContainer addBody(NewBodyAction t) {
 
 		Body body = physicWorld.createBody(t.getBodyDef());
 		if (body != null) {
@@ -57,15 +53,14 @@ public class PhysicsManager {
 
 			int IDvalue = physicWorld.getBodyCount() + 1;
 			t.IDbody = new Integer(IDvalue);
-			final AtomicIntegerArray toGraphics = new AtomicIntegerArray(3);
-			toGraphics.set(0, Float.floatToIntBits(body.getPosition().x));
-			toGraphics.set(1, Float.floatToIntBits(body.getPosition().y));
-			toGraphics.set(2, Float.floatToIntBits(body.getAngle()));
-			sortedOggetto2D.put(t.getID(), body);
-			transformsForGraphics.put(t.getID(), toGraphics);
+
+			InfoBodyContainer infoBodyContainer = new InfoBodyContainer(body, new Atomic3Float());
+			infoBodyContainer.updateSharedPosition();
+
+			sortedOggetto2D.put(t.ID, infoBodyContainer);
 			System.out.println("New element in world! ID:" + t.getID());
 			System.out.println("elements in world:" + physicWorld.getBodyCount());
-			return toGraphics;
+			return infoBodyContainer;
 		}
 		return null;
 	}
@@ -127,9 +122,9 @@ public class PhysicsManager {
 	}
 
 	private void removeBody(int id) {
-		Body deletedBody = sortedOggetto2D.remove(id);
+		InfoBodyContainer deletedBody = sortedOggetto2D.remove(id);
 		if (deletedBody != null) {
-			physicWorld.destroyBody(deletedBody);
+			physicWorld.destroyBody(deletedBody.body);
 			System.out.println("Removed element in world! ID:" + id);
 		}
 		System.out.println("Failed to remove element in world! ID:" + id);
@@ -139,24 +134,18 @@ public class PhysicsManager {
 	public void update() throws Exception {
 		ArrayList<PhysicsAction> myAction = actionManager.getPhysicActions();
 		for (PhysicsAction t : myAction) {
-			if (t instanceof NewBodyActionServer) {
-				NewBodyActionServer actNew = (NewBodyActionServer) t;
-				AtomicIntegerArray positionInfo = addBody(actNew);
-				if (positionInfo != null) {
-					CreateGameRenderable tempA = new CreateGameRenderable(actNew.getID(), actNew.getModelID(), positionInfo);
-					actionManager.addGraphicsAction(tempA);
-					NewEntityInfo tempB = new NewEntityInfo(actNew.getID(), actNew.getModelID(), positionInfo, actualTurn);
-					actionManager.addServerAction(tempB);
-				} else {
-					throw new Exception("Body creation failed");
-				}
-			}
 			if (t instanceof NewBodyAction) {
 				NewBodyAction actNew = (NewBodyAction) t;
-				AtomicIntegerArray positionInfo = addBody(actNew);
+				InfoBodyContainer positionInfo = addBody(actNew);
 				if (positionInfo != null) {
-					CreateGameRenderable tempA = new CreateGameRenderable(actNew.getID(), actNew.getModelID(), positionInfo);
+					CreateGameRenderable tempA = new CreateGameRenderable(actNew.getID(), actNew.getModelID(), positionInfo.atomicFloat);
 					actionManager.addGraphicsAction(tempA);
+
+					if (t instanceof NewBodyActionServer) {
+						NewEntityInfo tempB = new NewEntityInfo(actNew.getID(), actNew.getModelID(), positionInfo.atomicFloat, actualTurn);
+						actionManager.addServerAction(tempB);
+					}
+
 				} else {
 					throw new Exception("Body creation failed");
 				}
@@ -167,28 +156,11 @@ public class PhysicsManager {
 			}
 		}
 
-		Integer key;
-		Body body;
-
-		for (Map.Entry<Integer, Body> entry : sortedOggetto2D.entrySet()) {
-			key = entry.getKey();
-			body = entry.getValue();
-			AtomicIntegerArray toModify = transformsForGraphics.get(key);
-
-			if (toModify != null) {
-				toModify.set(0, Float.floatToIntBits(body.getPosition().x));
-				toModify.set(1, Float.floatToIntBits(body.getPosition().y));
-				toModify.set(2, Float.floatToIntBits(body.getAngle()));
-			}
+		for (InfoBodyContainer info : sortedOggetto2D.values()) {
+			info.updateSharedPosition();
 		}
 
 		actualTurn++;
-		/*
-		 * Body body = physicWorld.getBodyList();
-		 * 
-		 * while(body!=null){ System.out.println(body.getTransform().position);
-		 * body = body.getNext(); }
-		 */
 
 		physicWorld.step(TIMESTEP, 10, 10);
 	}

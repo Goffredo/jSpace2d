@@ -1,10 +1,10 @@
 package base.graphics.engine.objects;
 
-import java.util.concurrent.atomic.AtomicIntegerArray;
-
 import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.GL11;
+
+import base.physics.engine.Atomic3Float;
 
 public class VBORenderable extends GameRenderable {
 
@@ -12,7 +12,7 @@ public class VBORenderable extends GameRenderable {
 	private int normalsBufferID;
 	private int triangleCount;
 
-	public VBORenderable(int vertexBufferID, int normalBufferID, int triangleCount, AtomicIntegerArray transform) {		
+	public VBORenderable(int vertexBufferID, int normalBufferID, int triangleCount, Atomic3Float transform) {
 		super(transform);
 		this.verticesBufferID = vertexBufferID;
 		this.normalsBufferID = normalBufferID;
@@ -21,11 +21,11 @@ public class VBORenderable extends GameRenderable {
 
 	@Override
 	public void render() {
-		
+
 		GL11.glPushMatrix();
 
-		GL11.glTranslatef(Float.intBitsToFloat(transform.get(0)), Float.intBitsToFloat(transform.get(1)), 0.0f);
-		GL11.glRotatef((float) Math.toDegrees(Float.intBitsToFloat(transform.get(2))), 0, 0, 1);
+		GL11.glTranslatef(transform.get()[0], transform.get()[1], 0.0f);
+		GL11.glRotatef((float) Math.toDegrees(transform.get()[2]), 0, 0, 1);
 
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		ARBBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, verticesBufferID);
@@ -43,7 +43,7 @@ public class VBORenderable extends GameRenderable {
 
 	@Override
 	public void renderInterleavedDrawArray() {
-			throw new UnsupportedOperationException("Not yet implemented");
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
-	
+
 }

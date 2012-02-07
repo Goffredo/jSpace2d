@@ -6,8 +6,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 
+import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBVertexBufferObject;
 
 import base.graphics.engine.objects.RAMRenderable;
@@ -15,6 +15,7 @@ import base.graphics.engine.objects.VBORenderable;
 import base.graphics.engine.objects.common.Mesh;
 import base.graphics.engine.objects.common.Triangle;
 import base.graphics.engine.objects.loaders.SimpleObjLoader;
+import base.physics.engine.Atomic3Float;
 
 public class ObjectManager {
 
@@ -71,22 +72,22 @@ public class ObjectManager {
 		return out;
 	}
 
-	//TODO request by name?
-	public RAMRenderable requestRAMMesh(int modelIndex, AtomicIntegerArray transform){
+	// TODO request by name?
+	public RAMRenderable requestRAMMesh(int modelIndex, Atomic3Float transform) {
 		Mesh temp = models[modelIndex];
-		RAMRenderable out = new RAMRenderable(temp.verticesBuffer,temp.normalsBuffer,temp.interleavedBuffer, transform);
+		RAMRenderable out = new RAMRenderable(temp.verticesBuffer, temp.normalsBuffer, temp.interleavedBuffer, transform);
 		return out;
 	}
 
-	//TODO request by name?
-	public VBORenderable requestVBOMesh(int modelIndex, AtomicIntegerArray transform){
+	// TODO request by name?
+	public VBORenderable requestVBOMesh(int modelIndex, Atomic3Float transform) {
 		Mesh temp = models[modelIndex];
 		int vertexVBOID = GPUManager.createVBOID();
 		temp.verticesBuffer.rewind();
-		GPUManager.bufferData(vertexVBOID, temp.verticesBuffer, ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+		GPUManager.bufferData(vertexVBOID, temp.verticesBuffer, ARBBufferObject.GL_STATIC_DRAW_ARB);
 		int normalVBOID = GPUManager.createVBOID();
 		temp.normalsBuffer.rewind();
-		GPUManager.bufferData(normalVBOID, temp.normalsBuffer, ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+		GPUManager.bufferData(normalVBOID, temp.normalsBuffer, ARBBufferObject.GL_STATIC_DRAW_ARB);
 		VBORenderable out = new VBORenderable(vertexVBOID, normalVBOID, temp.triangles.size(), transform);
 		return out;
 	}
