@@ -72,7 +72,7 @@ public class ObjectManager {
 	}
 
 	//TODO request by name?
-	public RAMRenderable requestObjMesh(int modelIndex, AtomicIntegerArray transform){
+	public RAMRenderable requestRAMMesh(int modelIndex, AtomicIntegerArray transform){
 		Mesh temp = models[modelIndex];
 		RAMRenderable out = new RAMRenderable(temp.verticesBuffer,temp.normalsBuffer,temp.interleavedBuffer, transform);
 		return out;
